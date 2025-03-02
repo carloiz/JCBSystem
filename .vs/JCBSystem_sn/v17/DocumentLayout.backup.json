@@ -1,0 +1,136 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\loiz\\Desktop\\JCBSystem_sn\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{098701EC-D141-4043-B835-36BB128106A2}|JCBSystem\\JCBSystem.csproj|C:\\Users\\loiz\\Desktop\\JCBSystem_sn\\jcbsystem\\users\\userslistform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "RelativeMoniker": "D:0:0:{098701EC-D141-4043-B835-36BB128106A2}|JCBSystem\\JCBSystem.csproj|solutionrelative:jcbsystem\\users\\userslistform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{098701EC-D141-4043-B835-36BB128106A2}|JCBSystem\\JCBSystem.csproj|c:\\users\\loiz\\desktop\\jcbsystem_sn\\jcbsystem\\mainform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{098701EC-D141-4043-B835-36BB128106A2}|JCBSystem\\JCBSystem.csproj|solutionrelative:jcbsystem\\mainform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{098701EC-D141-4043-B835-36BB128106A2}|JCBSystem\\JCBSystem.csproj|C:\\Users\\loiz\\Desktop\\JCBSystem_sn\\jcbsystem\\databasehelper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{098701EC-D141-4043-B835-36BB128106A2}|JCBSystem\\JCBSystem.csproj|solutionrelative:jcbsystem\\databasehelper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{098701EC-D141-4043-B835-36BB128106A2}|JCBSystem\\JCBSystem.csproj|C:\\Users\\loiz\\Desktop\\JCBSystem_sn\\jcbsystem\\mainform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "RelativeMoniker": "D:0:0:{098701EC-D141-4043-B835-36BB128106A2}|JCBSystem\\JCBSystem.csproj|solutionrelative:jcbsystem\\mainform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{098701EC-D141-4043-B835-36BB128106A2}|JCBSystem\\JCBSystem.csproj|C:\\Users\\loiz\\Desktop\\JCBSystem_sn\\jcbsystem\\login\\usersdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{098701EC-D141-4043-B835-36BB128106A2}|JCBSystem\\JCBSystem.csproj|solutionrelative:jcbsystem\\login\\usersdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{098701EC-D141-4043-B835-36BB128106A2}|JCBSystem\\JCBSystem.csproj|C:\\Users\\loiz\\Desktop\\JCBSystem_sn\\jcbsystem\\common\\registrykeys.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{098701EC-D141-4043-B835-36BB128106A2}|JCBSystem\\JCBSystem.csproj|solutionrelative:jcbsystem\\common\\registrykeys.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{098701EC-D141-4043-B835-36BB128106A2}|JCBSystem\\JCBSystem.csproj|C:\\Users\\loiz\\Desktop\\JCBSystem_sn\\jcbsystem\\login\\loginform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "RelativeMoniker": "D:0:0:{098701EC-D141-4043-B835-36BB128106A2}|JCBSystem\\JCBSystem.csproj|solutionrelative:jcbsystem\\login\\loginform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "usersListForm.cs [Design]",
+              "DocumentMoniker": "C:\\Users\\loiz\\Desktop\\JCBSystem_sn\\JCBSystem\\Users\\usersListForm.cs",
+              "RelativeDocumentMoniker": "JCBSystem\\Users\\usersListForm.cs",
+              "ToolTip": "C:\\Users\\loiz\\Desktop\\JCBSystem_sn\\JCBSystem\\Users\\usersListForm.cs [Design]",
+              "RelativeToolTip": "JCBSystem\\Users\\usersListForm.cs [Design]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-01T11:04:13.861Z",
+              "EditorCaption": " [Design]"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "DatabaseHelper.cs",
+              "DocumentMoniker": "C:\\Users\\loiz\\Desktop\\JCBSystem_sn\\JCBSystem\\DatabaseHelper.cs",
+              "RelativeDocumentMoniker": "JCBSystem\\DatabaseHelper.cs",
+              "ToolTip": "C:\\Users\\loiz\\Desktop\\JCBSystem_sn\\JCBSystem\\DatabaseHelper.cs",
+              "RelativeToolTip": "JCBSystem\\DatabaseHelper.cs",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAABIAAAAoAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-01T07:54:11.414Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "RegistryKeys.cs",
+              "DocumentMoniker": "C:\\Users\\loiz\\Desktop\\JCBSystem_sn\\JCBSystem\\common\\RegistryKeys.cs",
+              "RelativeDocumentMoniker": "JCBSystem\\common\\RegistryKeys.cs",
+              "ToolTip": "C:\\Users\\loiz\\Desktop\\JCBSystem_sn\\JCBSystem\\common\\RegistryKeys.cs",
+              "RelativeToolTip": "JCBSystem\\common\\RegistryKeys.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAADAAAAANAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-01T07:39:24.195Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "UsersDto.cs",
+              "DocumentMoniker": "C:\\Users\\loiz\\Desktop\\JCBSystem_sn\\JCBSystem\\Login\\UsersDto.cs",
+              "RelativeDocumentMoniker": "JCBSystem\\Login\\UsersDto.cs",
+              "ToolTip": "C:\\Users\\loiz\\Desktop\\JCBSystem_sn\\JCBSystem\\Login\\UsersDto.cs",
+              "RelativeToolTip": "JCBSystem\\Login\\UsersDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAAtAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-01T07:23:14.745Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "mainForm.cs",
+              "DocumentMoniker": "C:\\Users\\loiz\\Desktop\\JCBSystem_sn\\JCBSystem\\mainForm.cs",
+              "RelativeDocumentMoniker": "JCBSystem\\mainForm.cs",
+              "ToolTip": "C:\\Users\\loiz\\Desktop\\JCBSystem_sn\\JCBSystem\\mainForm.cs",
+              "RelativeToolTip": "JCBSystem\\mainForm.cs",
+              "ViewState": "AgIAABcAAAAAAAAAAAAAwBsAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-01T07:20:34.241Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "mainForm.cs [Design]",
+              "DocumentMoniker": "C:\\Users\\loiz\\Desktop\\JCBSystem_sn\\JCBSystem\\mainForm.cs",
+              "RelativeDocumentMoniker": "JCBSystem\\mainForm.cs",
+              "ToolTip": "C:\\Users\\loiz\\Desktop\\JCBSystem_sn\\JCBSystem\\mainForm.cs [Design]",
+              "RelativeToolTip": "JCBSystem\\mainForm.cs [Design]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-01T07:20:30.916Z",
+              "EditorCaption": " [Design]"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "loginForm.cs [Design]",
+              "DocumentMoniker": "C:\\Users\\loiz\\Desktop\\JCBSystem_sn\\JCBSystem\\Login\\loginForm.cs",
+              "RelativeDocumentMoniker": "JCBSystem\\Login\\loginForm.cs",
+              "ToolTip": "C:\\Users\\loiz\\Desktop\\JCBSystem_sn\\JCBSystem\\Login\\loginForm.cs [Design]",
+              "RelativeToolTip": "JCBSystem\\Login\\loginForm.cs [Design]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-01T07:15:10.126Z",
+              "EditorCaption": " [Design]"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
