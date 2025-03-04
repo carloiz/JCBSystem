@@ -1,6 +1,6 @@
 ﻿namespace JCBSystem
 {
-    partial class mainForm
+    partial class MainForm
     {
         /// <summary>
         /// Required designer variable.
@@ -28,15 +28,15 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(mainForm));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.panel1 = new System.Windows.Forms.Panel();
             this.panel2 = new System.Windows.Forms.Panel();
             this.CloseApp = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.UsersBtn = new System.Windows.Forms.ToolStripButton();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
-            this.mainPanel = new System.Windows.Forms.Panel();
             this.SettingsBtn = new System.Windows.Forms.ToolStripButton();
+            this.mainPanel = new System.Windows.Forms.Panel();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -44,16 +44,18 @@
             // 
             this.panel1.Dock = System.Windows.Forms.DockStyle.Left;
             this.panel1.Location = new System.Drawing.Point(0, 0);
+            this.panel1.Margin = new System.Windows.Forms.Padding(2);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(218, 752);
+            this.panel1.Size = new System.Drawing.Size(164, 611);
             this.panel1.TabIndex = 1;
             // 
             // panel2
             // 
             this.panel2.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel2.Location = new System.Drawing.Point(218, 710);
+            this.panel2.Location = new System.Drawing.Point(164, 577);
+            this.panel2.Margin = new System.Windows.Forms.Padding(2);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(1152, 42);
+            this.panel2.Size = new System.Drawing.Size(864, 34);
             this.panel2.TabIndex = 2;
             // 
             // CloseApp
@@ -62,7 +64,7 @@
             this.CloseApp.Image = ((System.Drawing.Image)(resources.GetObject("CloseApp.Image")));
             this.CloseApp.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.CloseApp.Name = "CloseApp";
-            this.CloseApp.Size = new System.Drawing.Size(69, 70);
+            this.CloseApp.Size = new System.Drawing.Size(60, 56);
             this.CloseApp.Text = "Close";
             this.CloseApp.Click += new System.EventHandler(this.CloseApp_Click);
             // 
@@ -70,7 +72,7 @@
             // 
             this.toolStripSeparator1.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 73);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 59);
             // 
             // UsersBtn
             // 
@@ -93,20 +95,11 @@
             this.toolStripSeparator1,
             this.UsersBtn,
             this.SettingsBtn});
-            this.toolStrip1.Location = new System.Drawing.Point(218, 0);
+            this.toolStrip1.Location = new System.Drawing.Point(164, 0);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(1152, 73);
+            this.toolStrip1.Size = new System.Drawing.Size(864, 59);
             this.toolStrip1.TabIndex = 3;
             this.toolStrip1.Text = "toolStrip1";
-            // 
-            // mainPanel
-            // 
-            this.mainPanel.BackColor = System.Drawing.SystemColors.ActiveBorder;
-            this.mainPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.mainPanel.Location = new System.Drawing.Point(218, 73);
-            this.mainPanel.Name = "mainPanel";
-            this.mainPanel.Size = new System.Drawing.Size(1152, 637);
-            this.mainPanel.TabIndex = 4;
             // 
             // SettingsBtn
             // 
@@ -120,17 +113,28 @@
             this.SettingsBtn.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             this.SettingsBtn.Click += new System.EventHandler(this.SettingsBtn_Click);
             // 
+            // mainPanel
+            // 
+            this.mainPanel.BackColor = System.Drawing.SystemColors.ActiveBorder;
+            this.mainPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.mainPanel.Location = new System.Drawing.Point(164, 59);
+            this.mainPanel.Margin = new System.Windows.Forms.Padding(2);
+            this.mainPanel.Name = "mainPanel";
+            this.mainPanel.Size = new System.Drawing.Size(864, 518);
+            this.mainPanel.TabIndex = 4;
+            // 
             // mainForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1370, 752);
+            this.ClientSize = new System.Drawing.Size(1028, 611);
             this.Controls.Add(this.mainPanel);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.HelpButton = true;
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "mainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;

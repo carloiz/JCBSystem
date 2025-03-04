@@ -1,0 +1,126 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Data.SqlClient;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using JCBSystem.common;
+
+namespace JCBSystem.Users
+{
+    public partial class UserManagementForm: Form
+    {
+        private readonly DataManager dataManager;
+        private readonly CheckIfRecordExists recordExists;
+        private readonly GenerateNextValues values;
+        private readonly UsersListForm listForm;
+        private readonly string conn;
+
+        private readonly SystemDate date = new SystemDate();
+
+
+
+        public UserManagementForm(UsersListForm listForm, string conn)
+        {
+            InitializeComponent();
+            this.listForm = listForm;
+            this.conn = conn;
+            this.dataManager = new DataManager(conn);
+            this.values = new GenerateNextValues(conn);
+            this.recordExists = new CheckIfRecordExists(conn);
+        }
+
+        private async void button1_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(txtUsername.Text) 
+                || string.IsNullOrEmpty(txtPassword.Text) 
+                || string.IsNullOrEmpty(txtRepassword.Text) 
+                || string.IsNullOrEmpty(cbRole.Text))
+            {
+                MessageBox.Show(
+                    "Fill-Up All Fields.",
+                    "",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning
+                );
+                return;
+            }
+
+            if (txtPassword.Text != txtRepassword.Text)
+            {
+                MessageBox.Show(
+                    "Password and Retype Password Must Same.",
+                    "",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning
+                );
+                return;
+            }
+
+            bool isExist = await recordExists.CheckIfRecordExistsAsync(
+                new List<object> { txtUsername.Text },
+                "Users",
+                "Username = @param0"
+            );
+
+            if (isExist)
+            {
+                MessageBox.Show(
+                    "Username Already Exist.",
+                    "",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning
+                );
+                return;
+            }
+
+            await dataManager.CommitAndRollbackMethod(async (connection, transaction) =>
+            {
+                await Process(connection, transaction); // Tawagin ang Process method na may transaction at connection
+            });
+        }
+
+
+        private async Task Process(SqlConnection connection, SqlTransaction transaction)
+        {
+            string password = PasswordHelper.HashPassword(txtPassword.Text);
+
+            string userId = await values.GenerateNextIdAsync("Users", "UserNumber", "U");
+
+            DateTime dateToday = date.GetPhilippineTime();
+
+            var userCreateDto = new UserCreateDto
+            {
+                UserNumber = userId,
+                Username = txtUsername.Text,
+                Password = password,
+                UserLevel = cbRole.SelectedItem.ToString(),
+                Status = true,
+                IsSessionActive = false,
+                CurrentToken = null,
+                RecordDate = dateToday
+            };
+
+            await dataManager.InsertAsync(userCreateDto, "Users", connection, transaction);
+
+
+            transaction.Commit(); // Commit changes  
+
+            listForm.get_all_data();
+
+            // Display the message for successful shift start
+            MessageBox.Show("Successfully Add New Record.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+            FormHelper.CloseFormWithFade(this);
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            FormHelper.CloseFormWithFade(this);
+        }
+    }
+}

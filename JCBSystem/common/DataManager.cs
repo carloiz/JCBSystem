@@ -22,7 +22,7 @@ namespace JCBSystem.common
 
         public DataManager(string connectionString)
         {
-            connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
+            this.connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
         }
 
         public async Task<(string, int)>

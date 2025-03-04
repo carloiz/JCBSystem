@@ -19,7 +19,7 @@ using System.Windows.Forms;
 
 namespace JCBSystem
 {
-    public partial class mainForm : Form
+    public partial class MainForm : Form
     {
 
         //TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
@@ -32,10 +32,13 @@ namespace JCBSystem
 
         private TabControl tabControlMain = new TabControl();
 
-        public mainForm()
+        private readonly string conn;
+
+        public MainForm(string conn)
         {
             InitializeComponent();
             InitializeTabControl();
+            this.conn = conn;
         }
 
         private void InitializeTabControl()
@@ -128,7 +131,7 @@ namespace JCBSystem
 
             if (openForms.ContainsKey(formName))
             {
-                openForms[formName].Close();
+                FormHelper.CloseFormWithFade(openForms[formName]);
                 openForms.Remove(formName);
             }
 
@@ -163,7 +166,7 @@ namespace JCBSystem
             }
 
             openForms[title] = form;
-            form.Show();
+            FormHelper.OpenFormWithFade(form, false);
         }
 
 
@@ -217,8 +220,8 @@ namespace JCBSystem
 
         private void UsersBtn_Click(object sender, EventArgs e)
         {
-            OpenFormInTab(new usersListForm(), "Users");
-        }
+            OpenFormInTab(new UsersListForm(conn), "Users");
+        }  
 
         private void SettingsBtn_Click(object sender, EventArgs e)
         {

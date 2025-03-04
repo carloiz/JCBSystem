@@ -13,7 +13,7 @@ namespace JCBSystem.common
 
         public CheckIfRecordExists(string connectionString)
         {
-            connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
+            this.connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
         }
         public async Task<bool> CheckIfRecordExistsAsync(List<object> filter, string tableName, string whereCondition)
         {

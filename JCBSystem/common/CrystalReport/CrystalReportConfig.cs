@@ -19,7 +19,7 @@ namespace JCBSystem.common.CrystalReport
 
         public CrystalReportConfig(string connectionString, DatabaseHelper databaseHelper)
         {
-            connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
+            this.connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
             this.databaseHelper = databaseHelper;
         }
 

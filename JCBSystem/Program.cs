@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -14,9 +15,13 @@ namespace JCBSystem
         [STAThread]
         static void Main()
         {
+
+            string connectionString = ConfigurationManager.ConnectionStrings["MyDbConnection"].ConnectionString;
+
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new mainForm());
+            Application.Run(new MainForm(connectionString));
         }
     }
 }

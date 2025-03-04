@@ -14,7 +14,7 @@ namespace JCBSystem.common
 
         public GetComboBoxAttributes(string connectionString)
         {
-            connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
+            this.connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
         }
 
         public async Task GetComboBoxAttributeValueAsync(ComboBox comboBox, string query)

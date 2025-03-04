@@ -13,7 +13,7 @@ namespace JCBSystem.common
 
         public GenerateNextValues(string connectionString)
         {
-            connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
+            this.connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
         }
 
         public async Task<string> GenerateNextIdAsync(string tableName, string primaryKey, string prefix)

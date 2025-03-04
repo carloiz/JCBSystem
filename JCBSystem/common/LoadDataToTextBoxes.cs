@@ -14,7 +14,7 @@ namespace JCBSystem.common
 
         public LoadDataToTextBoxes(string connectionString)
         {
-            connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
+            this.connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
         }
 
         private readonly Modules modules = new Modules();
