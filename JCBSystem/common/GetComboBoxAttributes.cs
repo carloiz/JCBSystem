@@ -12,9 +12,9 @@ namespace JCBSystem.common
     {
         private readonly string connectionString;
 
-        public GetComboBoxAttributes(string connectionString)
+        public GetComboBoxAttributes()
         {
-            this.connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
+            this.connectionString = DatabaseConfig.ConnectionString;
         }
 
         public async Task GetComboBoxAttributeValueAsync(ComboBox comboBox, string query)

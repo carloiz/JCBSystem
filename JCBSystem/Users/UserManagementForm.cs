@@ -14,24 +14,20 @@ namespace JCBSystem.Users
 {
     public partial class UserManagementForm: Form
     {
-        private readonly DataManager dataManager;
-        private readonly CheckIfRecordExists recordExists;
-        private readonly GenerateNextValues values;
+        private readonly DataManager dataManager = new DataManager();
+        private readonly CheckIfRecordExists recordExists = new CheckIfRecordExists();
+        private readonly GenerateNextValues values = new GenerateNextValues();
         private readonly UsersListForm listForm;
-        private readonly string conn;
-
+        private readonly bool isNewRecord;
         private readonly SystemDate date = new SystemDate();
 
 
 
-        public UserManagementForm(UsersListForm listForm, string conn)
+        public UserManagementForm(UsersListForm listForm, bool isNewRecord)
         {
             InitializeComponent();
             this.listForm = listForm;
-            this.conn = conn;
-            this.dataManager = new DataManager(conn);
-            this.values = new GenerateNextValues(conn);
-            this.recordExists = new CheckIfRecordExists(conn);
+            this.isNewRecord = isNewRecord;
         }
 
         private async void button1_Click(object sender, EventArgs e)
@@ -121,6 +117,20 @@ namespace JCBSystem.Users
         private void button3_Click(object sender, EventArgs e)
         {
             FormHelper.CloseFormWithFade(this);
+        }
+
+        private void UserManagementForm_Load(object sender, EventArgs e)
+        {
+            if (isNewRecord)
+            {
+                this.button1.Enabled = true;
+                this.button2.Enabled = false;
+            }
+            else
+            {
+                this.button1.Enabled = false;
+                this.button2.Enabled = true;
+            }
         }
     }
 }

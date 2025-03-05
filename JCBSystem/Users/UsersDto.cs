@@ -17,6 +17,13 @@ namespace JCBSystem.Users
     }
 
 
+    public class UserUpdateDto
+    {
+        public string UserNumber { get; set; }
+        public bool IsSessionActive { get; set; }
+        public string CurrentToken { get; set; }
+    }
+
     public class UserCreateDto
     {
         public string UserNumber { get; set; }

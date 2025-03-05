@@ -12,9 +12,9 @@ namespace JCBSystem.common
 
         private readonly string connectionString;
 
-        public GetFieldsValues(string connectionString)
+        public GetFieldsValues()
         {
-            this.connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
+            this.connectionString = DatabaseConfig.ConnectionString;
         }
 
         public async Task<Dictionary<string, object>> GetFieldValuesAsync(

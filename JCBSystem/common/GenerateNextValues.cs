@@ -11,9 +11,9 @@ namespace JCBSystem.common
     {
         private readonly string connectionString;
 
-        public GenerateNextValues(string connectionString)
+        public GenerateNextValues()
         {
-            this.connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
+            this.connectionString = DatabaseConfig.ConnectionString;
         }
 
         public async Task<string> GenerateNextIdAsync(string tableName, string primaryKey, string prefix)

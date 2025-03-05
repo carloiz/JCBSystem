@@ -5,7 +5,9 @@ using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Configuration;
 using System.Data;
+using System.Data.SqlClient;
 using System.Drawing;
 using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
@@ -24,21 +26,25 @@ namespace JCBSystem
 
         //TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
 
-        private readonly string subKey = @"Software\JCBSystem";
 
         private readonly RegistryKeys registryKeys = new RegistryKeys();
+
+        private readonly CheckIfRecordExists recordExists = new CheckIfRecordExists();
+
+        private readonly DataManager dataManager = new DataManager();
 
         private Dictionary<string, Form> openForms = new Dictionary<string, Form>();
 
         private TabControl tabControlMain = new TabControl();
 
-        private readonly string conn;
+        private readonly string subKey = @"Software\JCBSystem";
 
-        public MainForm(string conn)
+        public MainForm()
         {
             InitializeComponent();
             InitializeTabControl();
-            this.conn = conn;
+           _ = GetSession();
+
         }
 
         private void InitializeTabControl()
@@ -169,49 +175,96 @@ namespace JCBSystem
             FormHelper.OpenFormWithFade(form, false);
         }
 
+        public void userIsLogin()
+        {
+            panel1.Visible = true;
+            UsersBtn.Visible = true;
+            SettingsBtn.Visible = true;
+            mainPanel.Visible = true;
+        }
 
 
+        private void userIsLogout()
+        {
+            panel1.Visible = false;
+            UsersBtn.Visible = false;
+            SettingsBtn.Visible = false;
+            mainPanel.Visible = false;
 
-        private async Task GetSession()
+            loginForm loginForm = new loginForm(this, subKey);
+            loginForm.MdiParent = this; // Set parent
+            FormHelper.OpenFormWithFade(loginForm, false);
+        }
+
+        public async Task GetSession()
+        {
+
+            await dataManager.CommitAndRollbackMethod(async (connection, transaction) =>
+            {
+                await Process(connection, transaction); // Tawagin ang Process method na may transaction at connection
+            });
+
+        }
+
+        private async Task Process(SqlConnection connection, SqlTransaction transaction)
         {
             var userRegistInfo = await registryKeys.GetRegistLocalSession<UserRegistInfo>(subKey);
 
             string token = userRegistInfo.AuthToken;
-        }
+            string usernumber = userRegistInfo.UserNumber;
+            string userlevel = userRegistInfo.UserLevel;
 
-
-        public string GetJWTToken(LoginDto user)
-        {
-            string jwtKey = JCBSystem.Properties.Settings.Default.JwtKey;
-
-            var textInfo = CultureInfo.CurrentCulture.TextInfo;
-
-            var claims = new List<Claim>
+            if (string.IsNullOrEmpty(token) || string.IsNullOrEmpty(usernumber) || string.IsNullOrEmpty(userlevel))
             {
-                new Claim(ClaimTypes.Name, user.Username),
-                new Claim(ClaimTypes.Role, textInfo.ToTitleCase(user.UserLevel.ToLower())),
-            };
+                userIsLogout();
+                throw new KeyNotFoundException("Token username or user level not found");
+            }
 
-            // Gamitin ang tamang secret key mula sa configuration
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
-            var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            token = DataProtectorHelper.Unprotect(token);
+            usernumber = DataProtectorHelper.Unprotect(usernumber);
+            userlevel = DataProtectorHelper.Unprotect(userlevel);
 
-            var jwtToken = new JwtSecurityToken(
-                claims: claims,
-                expires: DateTime.UtcNow.AddMinutes(30),
-                signingCredentials: credentials
-            );
+            if (JwtTokenHelper.IsTokenExpired(token))
+            {
+                bool isExist = await recordExists.CheckIfRecordExistsAsync(
+                    new List<object> { usernumber },
+                    "Users",
+                    "UserNumber = @param0 AND IsSessionActive = 1"
+                );
 
-            return new JwtSecurityTokenHandler().WriteToken(jwtToken);
+                if (!isExist)
+                {
+                    userIsLogout();
+                    throw new KeyNotFoundException("User not found in Session.");
+                }
+
+                var userDto = new UserUpdateDto
+                {
+                    UserNumber = usernumber, // always have this for Primary Key
+                    IsSessionActive = false,
+                    CurrentToken = null
+                };
+
+                await dataManager.UpdateAsync(
+                    entity: userDto,
+                    tableName: "Users",
+                    connection: connection,
+                    transaction: transaction,
+                    primaryKey: "UserNumber"
+                );
+
+                await registryKeys.DeleteRegistLocalSession<UserRegistInfo>(subKey);
+
+                userIsLogout();
+                throw new KeyNotFoundException("Token Expired");
+
+            }
+            transaction.Commit(); // Commit changes
+
+            userIsLogin();
+
         }
 
-
-        private bool IsTokenExpired(string token)
-        {
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var jwtToken = tokenHandler.ReadJwtToken(token);
-            return jwtToken.ValidTo < DateTime.UtcNow;
-        }
 
         private void CloseApp_Click(object sender, EventArgs e)
         {
@@ -220,12 +273,12 @@ namespace JCBSystem
 
         private void UsersBtn_Click(object sender, EventArgs e)
         {
-            OpenFormInTab(new UsersListForm(conn), "Users");
+            OpenFormInTab(new UsersListForm(), "Users");
         }  
 
         private void SettingsBtn_Click(object sender, EventArgs e)
         {
-            OpenFormInTab(new loginForm(), "Settings");
+            OpenFormInTab(new loginForm(this, subKey), "Settings");
         }
     }
 }

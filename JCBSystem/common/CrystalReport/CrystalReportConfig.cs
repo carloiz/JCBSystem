@@ -17,9 +17,9 @@ namespace JCBSystem.common.CrystalReport
         private readonly string connectionString;
         private readonly DatabaseHelper databaseHelper;
 
-        public CrystalReportConfig(string connectionString, DatabaseHelper databaseHelper)
+        public CrystalReportConfig(DatabaseHelper databaseHelper)
         {
-            this.connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
+            this.connectionString = DatabaseConfig.ConnectionString;
             this.databaseHelper = databaseHelper;
         }
 
@@ -33,7 +33,7 @@ namespace JCBSystem.common.CrystalReport
 
             TableLogOnInfo crtableLogoninfo;
             // Set up Crystal Reports connection
-            var crConnectionInfo = databaseHelper.crystalConnection();
+            var crConnectionInfo = databaseHelper.crystalConnection(connectionString);
             Tables CrTables = repo.Database.Tables;
             foreach (Table CrTable in CrTables)
             {

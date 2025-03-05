@@ -1,31 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using JCBSystem.common;
+
 
 namespace JCBSystem.Users
 {
     public partial class UsersListForm : Form
     {
 
-        private readonly DataManager dataManager;
+        private readonly DataManager dataManager = new DataManager();
 
         private readonly Modules modules = new Modules();
 
         private readonly Pagination pagination = new Pagination();
-        private readonly string conn;
 
-        public UsersListForm(string conn)
+        private string userNumber;
+
+        public UsersListForm()
         {
             InitializeComponent();
-            this.conn = conn;
-            dataManager = new DataManager(conn);
             get_all_data();
 
         }
@@ -102,17 +97,45 @@ namespace JCBSystem.Users
 
         private void dataGridView1_MouseUp(object sender, MouseEventArgs e)
         {
+            userNumber = string.Empty;
+
             if (e.Button == MouseButtons.Right)
             {
                 cms1.Show(Cursor.Position);
+            }
+
+            if (e.Button == MouseButtons.Right) // Check kung right-click
+            {
+                var hit = dataGridView1.HitTest(e.X, e.Y); // Alamin kung anong row ang na-click
+                if (hit.RowIndex >= 0) // Siguraduhin na valid ang row index
+                {
+                    dataGridView1.ClearSelection(); // I-clear ang ibang selections
+                    dataGridView1.Rows[hit.RowIndex].Selected = true; // I-select ang row
+
+                    // Kunin ang value ng "ID" column
+                    object idValue = dataGridView1.Rows[hit.RowIndex].Cells["UserNumber"].Value;
+
+                    userNumber = idValue.ToString();
+
+                }
             }
         }
 
         private void addNewToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            UserManagementForm user = new UserManagementForm(this, conn);
+            UserManagementForm user = new UserManagementForm(this , true);
             FormHelper.OpenFormWithFade(user, true);
 
+        }
+
+        private void updateToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(userNumber))
+            {
+                return;
+            }
+            UserManagementForm user = new UserManagementForm(this, false);
+            FormHelper.OpenFormWithFade(user, true);
         }
     }
 }

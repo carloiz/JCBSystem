@@ -37,11 +37,14 @@
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.SettingsBtn = new System.Windows.Forms.ToolStripButton();
             this.mainPanel = new System.Windows.Forms.Panel();
+            this.logoutBtn = new System.Windows.Forms.Button();
+            this.panel1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.logoutBtn);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Left;
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Margin = new System.Windows.Forms.Padding(2);
@@ -64,7 +67,7 @@
             this.CloseApp.Image = ((System.Drawing.Image)(resources.GetObject("CloseApp.Image")));
             this.CloseApp.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.CloseApp.Name = "CloseApp";
-            this.CloseApp.Size = new System.Drawing.Size(60, 56);
+            this.CloseApp.Size = new System.Drawing.Size(60, 63);
             this.CloseApp.Text = "Close";
             this.CloseApp.Click += new System.EventHandler(this.CloseApp_Click);
             // 
@@ -72,7 +75,7 @@
             // 
             this.toolStripSeparator1.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 59);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 66);
             // 
             // UsersBtn
             // 
@@ -97,7 +100,7 @@
             this.SettingsBtn});
             this.toolStrip1.Location = new System.Drawing.Point(164, 0);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(864, 59);
+            this.toolStrip1.Size = new System.Drawing.Size(864, 66);
             this.toolStrip1.TabIndex = 3;
             this.toolStrip1.Text = "toolStrip1";
             // 
@@ -117,13 +120,23 @@
             // 
             this.mainPanel.BackColor = System.Drawing.SystemColors.ActiveBorder;
             this.mainPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.mainPanel.Location = new System.Drawing.Point(164, 59);
+            this.mainPanel.Location = new System.Drawing.Point(164, 66);
             this.mainPanel.Margin = new System.Windows.Forms.Padding(2);
             this.mainPanel.Name = "mainPanel";
-            this.mainPanel.Size = new System.Drawing.Size(864, 518);
+            this.mainPanel.Size = new System.Drawing.Size(864, 511);
             this.mainPanel.TabIndex = 4;
             // 
-            // mainForm
+            // logoutBtn
+            // 
+            this.logoutBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.logoutBtn.Location = new System.Drawing.Point(13, 577);
+            this.logoutBtn.Name = "logoutBtn";
+            this.logoutBtn.Size = new System.Drawing.Size(135, 23);
+            this.logoutBtn.TabIndex = 0;
+            this.logoutBtn.Text = "Logout";
+            this.logoutBtn.UseVisualStyleBackColor = true;
+            // 
+            // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -134,10 +147,12 @@
             this.Controls.Add(this.panel1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.HelpButton = true;
+            this.IsMdiContainer = true;
             this.Margin = new System.Windows.Forms.Padding(2);
-            this.Name = "mainForm";
+            this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
+            this.panel1.ResumeLayout(false);
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
             this.ResumeLayout(false);
@@ -154,6 +169,7 @@
         private System.Windows.Forms.ToolStrip toolStrip1;
         private System.Windows.Forms.Panel mainPanel;
         private System.Windows.Forms.ToolStripButton SettingsBtn;
+        private System.Windows.Forms.Button logoutBtn;
     }
 }
 

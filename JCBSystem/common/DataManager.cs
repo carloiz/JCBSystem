@@ -20,9 +20,9 @@ namespace JCBSystem.common
         private readonly string dateFormat = "dddd, MMMM dd, yyyy hh:mm tt";
 
 
-        public DataManager(string connectionString)
+        public DataManager()
         {
-            this.connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
+            this.connectionString = DatabaseConfig.ConnectionString;
         }
 
         public async Task<(string, int)>
@@ -584,7 +584,7 @@ namespace JCBSystem.common
                     {
                         transaction.Rollback(); // Rollback if there's an error
                         MessageBox.Show(
-                            $"RollBack Complete An Error encounter:\n\n{ex.Message}",
+                            $"{ex.Message}",
                             "Error",
                             MessageBoxButtons.OK,
                             MessageBoxIcon.Error
