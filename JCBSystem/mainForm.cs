@@ -256,12 +256,16 @@ namespace JCBSystem
                 await registryKeys.DeleteRegistLocalSession<UserRegistInfo>(subKey);
 
                 userIsLogout();
-                throw new KeyNotFoundException("Token Expired");
-
+                
+                transaction.Commit(); // Commit changes
+                
+                MessageBox.Show("Token Expired","",MessageBoxButtons.OK,MessageBoxIcon.Exclamation);
+                return;
             }
-            transaction.Commit(); // Commit changes
 
             userIsLogin();
+
+            usernameLbl.Text = usernumber;
 
         }
 
