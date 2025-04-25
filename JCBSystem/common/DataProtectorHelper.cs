@@ -1,23 +1,40 @@
-﻿using System;
+﻿using JCBSystem.Login;
+using Microsoft.Win32;
+using System;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace JCBSystem.common
 {
-    public class DataProtectorHelper
+    public static class DataProtectorHelper
     {
-        public static string Protect(string data)
+        public static async Task<string> Protect(string data)
         {
-            byte[] dataBytes = Encoding.UTF8.GetBytes(data);
-            byte[] encryptedData = ProtectedData.Protect(dataBytes, null, DataProtectionScope.CurrentUser);
-            return Convert.ToBase64String(encryptedData);
+            try
+            {
+                byte[] dataBytes = Encoding.UTF8.GetBytes(data);
+                byte[] encryptedData = ProtectedData.Protect(dataBytes, null, DataProtectionScope.CurrentUser);
+                return Convert.ToBase64String(encryptedData);
+            }
+            catch (Exception ex)
+            {
+                throw new ArgumentException(ex.ToString());
+            }
         }
-
-        public static string Unprotect(string encryptedData)
+         
+        public static async Task<string> Unprotect(string encryptedData)
         {
-            byte[] dataBytes = Convert.FromBase64String(encryptedData);
-            byte[] decryptedData = ProtectedData.Unprotect(dataBytes, null, DataProtectionScope.CurrentUser);
-            return Encoding.UTF8.GetString(decryptedData);
+            try
+            {
+                byte[] dataBytes = Convert.FromBase64String(encryptedData);
+                byte[] decryptedData = ProtectedData.Unprotect(dataBytes, null, DataProtectionScope.CurrentUser);
+                return Encoding.UTF8.GetString(decryptedData);
+            }
+            catch (Exception ex)
+            {
+                throw new ArgumentException(ex.ToString());
+            }
         }
     }
 }

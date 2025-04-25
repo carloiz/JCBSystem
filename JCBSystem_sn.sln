@@ -1,20 +1,35 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.12.35707.178 d17.12
+VisualStudioVersion = 17.12.35707.178
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JCBSystem", "JCBSystem\JCBSystem.csproj", "{098701EC-D141-4043-B835-36BB128106A2}"
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "JCBInstaller", "JCBInstaller\JCBInstaller.vdproj", "{B271A2B2-2FE5-420E-9C2C-DD2F3D093832}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
 		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{098701EC-D141-4043-B835-36BB128106A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{098701EC-D141-4043-B835-36BB128106A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{098701EC-D141-4043-B835-36BB128106A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{098701EC-D141-4043-B835-36BB128106A2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{098701EC-D141-4043-B835-36BB128106A2}.Debug|x64.ActiveCfg = Debug|x64
+		{098701EC-D141-4043-B835-36BB128106A2}.Debug|x64.Build.0 = Debug|x64
+		{098701EC-D141-4043-B835-36BB128106A2}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{098701EC-D141-4043-B835-36BB128106A2}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{098701EC-D141-4043-B835-36BB128106A2}.Release|x64.ActiveCfg = Release|x64
+		{098701EC-D141-4043-B835-36BB128106A2}.Release|x64.Build.0 = Release|x64
+		{B271A2B2-2FE5-420E-9C2C-DD2F3D093832}.Debug|Any CPU.ActiveCfg = Debug
+		{B271A2B2-2FE5-420E-9C2C-DD2F3D093832}.Debug|x64.ActiveCfg = Release
+		{B271A2B2-2FE5-420E-9C2C-DD2F3D093832}.Debug|x64.Build.0 = Release
+		{B271A2B2-2FE5-420E-9C2C-DD2F3D093832}.Release|Any CPU.ActiveCfg = Debug
+		{B271A2B2-2FE5-420E-9C2C-DD2F3D093832}.Release|Any CPU.Build.0 = Debug
+		{B271A2B2-2FE5-420E-9C2C-DD2F3D093832}.Release|x64.ActiveCfg = Release
+		{B271A2B2-2FE5-420E-9C2C-DD2F3D093832}.Release|x64.Build.0 = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

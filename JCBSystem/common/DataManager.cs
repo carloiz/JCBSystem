@@ -1,5 +1,10 @@
-﻿using System;
+﻿using JCBSystem.Connection;
+using MySqlConnector;
+using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.Common;
+using System.Data.Odbc;
 using System.Data.SqlClient;
 using System.Drawing;
 using System.Globalization;
@@ -12,18 +17,19 @@ namespace JCBSystem.common
 {
     public class DataManager
     {
-        private readonly string connectionString;
+
+        private readonly IDbConnectionFactory _connectionFactory;
+
 
         private readonly Color headerForeColor = Color.White;
         private readonly Color headerBackColor = Color.FromArgb(64, 64, 64);
 
         private readonly string dateFormat = "dddd, MMMM dd, yyyy hh:mm tt";
 
-
-        public DataManager()
+        public DataManager() 
         {
-            this.connectionString = DatabaseConfig.ConnectionString;
-        }
+            this._connectionFactory = ConnectionFactorySelector.GetFactory();
+        }    
 
         public async Task<(string, int)>
           SearchWithPaginatedAsync<T>(
@@ -45,34 +51,68 @@ namespace JCBSystem.common
             int offset = (pageNumber - 1) * pageSize;
             int totalRecords = 0;
 
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (var connection = _connectionFactory.CreateConnection())
             {
-                await connection.OpenAsync();
+                await OpenConnectionAsync(connection);
 
-                if (!string.IsNullOrEmpty(countQuery))
+                bool isOdbc = connection is OdbcConnection;
+
+                string finalCountQuery = Modules.ReplaceSharpWithParams(countQuery, isOdbc);
+                string finalDataQuery = Modules.ReplaceSharpWithParams(dataQuery, isOdbc);
+
+                if (!string.IsNullOrEmpty(finalCountQuery))
                 {
                     // Execute the count query to get total records
-                    using (SqlCommand countCommand = new SqlCommand(countQuery, connection))
+                    using (var countCommand = connection.CreateCommand())
                     {
+                        countCommand.CommandText = finalCountQuery;
+
                         if (filter.Count > 0)
                         {
                             foreach (var param in filter)
                             {
                                 string paramName = "@param" + index;
-                                countCommand.Parameters.AddWithValue(paramName, param);
+
+                                var parameter = countCommand.CreateParameter();
+                                parameter.ParameterName = paramName;
+                                parameter.Value = param;
+                                countCommand.Parameters.Add(parameter);
+
                                 index++;
                             }
                         }
 
-                        totalRecords = (int)await countCommand.ExecuteScalarAsync();
+                        // Execute the count query to get total records
+                        if (countCommand is DbCommand dbCountCommand)
+                        {
+                            var result = await dbCountCommand.ExecuteScalarAsync();
+                            totalRecords = Convert.ToInt32(result);
+                        }
+                        else
+                        {
+                            var result = countCommand.ExecuteScalar();
+                            totalRecords = Convert.ToInt32(result);
+                        }
                     }
+
                 }
 
                 // Execute the data query to get paginated records
-                using (SqlCommand command = new SqlCommand(dataQuery, connection))
+                using (var command = connection.CreateCommand())
                 {
-                    command.Parameters.AddWithValue("@Offset", offset);
-                    command.Parameters.AddWithValue("@PageSize", pageSize);
+
+                    // Explicitly create parameters for pagination
+                    var offsetParameter = command.CreateParameter();
+                    offsetParameter.ParameterName = "@Offset";
+                    offsetParameter.Value = offset;
+                    command.Parameters.Add(offsetParameter);
+
+                    var pageSizeParameter = command.CreateParameter();
+                    pageSizeParameter.ParameterName = "@PageSize";
+                    pageSizeParameter.Value = pageSize;
+                    command.Parameters.Add(pageSizeParameter);
+
+                    command.CommandText = finalDataQuery;
 
                     index = 0;
 
@@ -81,56 +121,65 @@ namespace JCBSystem.common
                         foreach (var param in filter)
                         {
                             string paramName = "@param" + index;
-                            command.Parameters.AddWithValue(paramName, param);
+
+                            var parameter = command.CreateParameter();
+                            parameter.ParameterName = paramName;
+                            parameter.Value = param;
+                            command.Parameters.Add(parameter);
+
                             index++;
                         }
                     }
 
-                    using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                    // Cast to DbCommand to access ExecuteReaderAsync
+                    if (command is DbCommand dbCommand)
                     {
-                        // Reading paginated data
-                        while (await reader.ReadAsync())
+                        using (var reader = await dbCommand.ExecuteReaderAsync())
                         {
-                            T entity = new T();
-                            foreach (var prop in typeof(T).GetProperties())
+                            // Reading paginated data
+                            while (await reader.ReadAsync())
                             {
-                                var columnName = prop.Name;
-                                if (!reader.IsDBNull(reader.GetOrdinal(columnName)))
+                                T entity = new T();
+                                foreach (var prop in typeof(T).GetProperties())
                                 {
-                                    var columnValue = reader[columnName];
-
-                                    // Check if the property is an enum
-                                    if (prop.PropertyType.IsEnum)
+                                    var columnName = prop.Name;
+                                    if (!reader.IsDBNull(reader.GetOrdinal(columnName)))
                                     {
-                                        if (int.TryParse(columnValue.ToString(), out int enumValue))
+                                        var columnValue = reader[columnName];
+
+                                        // Check if the property is an enum
+                                        if (prop.PropertyType.IsEnum)
                                         {
-                                            prop.SetValue(entity, Enum.ToObject(prop.PropertyType, enumValue));
+                                            if (int.TryParse(columnValue.ToString(), out int enumValue))
+                                            {
+                                                prop.SetValue(entity, Enum.ToObject(prop.PropertyType, enumValue));
+                                            }
+                                        }
+                                        // Check if the property is a boolean (bool)
+                                        else if (prop.Name == "Status")
+                                        {
+                                            // Convert bool to string ("Active" or "Inactive") specifically for the "Status" property
+                                            bool boolValue = Convert.ToBoolean(columnValue);
+                                            string displayValue = boolValue ? "Active" : "Inactive";
+                                            prop.SetValue(entity, displayValue);
+                                        }
+
+                                        else if (columnValue != null && prop.PropertyType.IsAssignableFrom(columnValue.GetType()))
+                                        {
+                                            prop.SetValue(entity, columnValue);
+                                        }
+                                        else if (prop.PropertyType == typeof(string))
+                                        {
+                                            prop.SetValue(entity, columnValue.ToString());
+                                        }
+                                        else if (prop.PropertyType == typeof(int) && columnValue is string)
+                                        {
+                                            prop.SetValue(entity, int.Parse(columnValue.ToString()));
                                         }
                                     }
-                                    // Check if the property is a boolean (bool)
-                                    else if (prop.Name == "Status")
-                                    {
-                                        // Convert bool to string ("Active" or "Inactive") specifically for the "Status" property
-                                        bool boolValue = (bool)columnValue;
-                                        string displayValue = boolValue ? "Active" : "Inactive";
-                                        prop.SetValue(entity, displayValue);
-                                    }
-
-                                    else if (columnValue != null && prop.PropertyType.IsAssignableFrom(columnValue.GetType()))
-                                    {
-                                        prop.SetValue(entity, columnValue);
-                                    }
-                                    else if (prop.PropertyType == typeof(string))
-                                    {
-                                        prop.SetValue(entity, columnValue.ToString());
-                                    }
-                                    else if (prop.PropertyType == typeof(int) && columnValue is string)
-                                    {
-                                        prop.SetValue(entity, int.Parse(columnValue.ToString()));
-                                    }
                                 }
+                                resultList.Add(entity);
                             }
-                            resultList.Add(entity);
                         }
                     }
                 }
@@ -237,71 +286,106 @@ namespace JCBSystem.common
             int offset = (pageNumber - 1) * pageSize;
             int totalRecords = 0;
 
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (var connection = _connectionFactory.CreateConnection())
             {
-                await connection.OpenAsync();
+                await OpenConnectionAsync(connection);
 
 
-                if (!string.IsNullOrEmpty(countQuery))
+                bool isOdbc = connection is OdbcConnection;
+
+                string finalCountQuery = Modules.ReplaceSharpWithParams(countQuery, isOdbc);
+                string finalDataQuery = Modules.ReplaceSharpWithParams(dataQuery, isOdbc);
+
+
+                if (!string.IsNullOrEmpty(finalCountQuery))
                 {
                     // Execute the count query to get total records
-                    using (SqlCommand countCommand = new SqlCommand(countQuery, connection))
+                    using (var countCommand = connection.CreateCommand())
                     {
-                        totalRecords = (int)await countCommand.ExecuteScalarAsync();
+                        countCommand.CommandText = finalCountQuery;
+
+                        // Gamitin dynamic kung supported ang async, fallback to sync kung hindi
+                        if (countCommand is DbCommand dbCountCommand)
+                        {
+                            var result = await dbCountCommand.ExecuteScalarAsync();
+                            totalRecords = Convert.ToInt32(result);
+                        }
+                        else
+                        {
+                            var result = countCommand.ExecuteScalar();
+                            totalRecords = Convert.ToInt32(result);
+                        }
                     }
+
                 }
 
                 // Execute the data query to get paginated records
-                using (SqlCommand command = new SqlCommand(dataQuery, connection))
+                // Execute the count query to get total records
+                using (var command = connection.CreateCommand())
                 {
-                    command.Parameters.AddWithValue("@Offset", offset);
-                    command.Parameters.AddWithValue("@PageSize", pageSize);
 
-                    using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                    // Explicitly create parameters for pagination
+                    var offsetParameter = command.CreateParameter();
+                    offsetParameter.ParameterName = "@Offset";
+                    offsetParameter.Value = offset;
+                    command.Parameters.Add(offsetParameter);
+
+                    var pageSizeParameter = command.CreateParameter();
+                    pageSizeParameter.ParameterName = "@PageSize";
+                    pageSizeParameter.Value = pageSize;
+                    command.Parameters.Add(pageSizeParameter);
+
+                    command.CommandText = finalDataQuery;
+
+                    // Cast to DbCommand to access ExecuteReaderAsync
+                    if (command is DbCommand dbCommand)
                     {
-                        // Reading paginated data
-                        while (await reader.ReadAsync())
+                        using (var reader = await dbCommand.ExecuteReaderAsync())
                         {
-                            T entity = new T();
-                            foreach (var prop in typeof(T).GetProperties())
+                            // Reading paginated data
+                            while (await reader.ReadAsync())
                             {
-                                var columnName = prop.Name;
-                                if (!reader.IsDBNull(reader.GetOrdinal(columnName)))
+                                T entity = new T();
+                                foreach (var prop in typeof(T).GetProperties())
                                 {
-                                    var columnValue = reader[columnName];
-
-                                    // Check if the property is an enum
-                                    if (prop.PropertyType.IsEnum)
+                                    var columnName = prop.Name;
+                                    if (!reader.IsDBNull(reader.GetOrdinal(columnName)))
                                     {
-                                        if (int.TryParse(columnValue.ToString(), out int enumValue))
+                                        var columnValue = reader[columnName];
+
+                                        // Check if the property is an enum
+                                        if (prop.PropertyType.IsEnum)
                                         {
-                                            prop.SetValue(entity, Enum.ToObject(prop.PropertyType, enumValue));
+                                            if (int.TryParse(columnValue.ToString(), out int enumValue))
+                                            {
+                                                prop.SetValue(entity, Enum.ToObject(prop.PropertyType, enumValue));
+                                            }
+                                        }
+                                        // Check if the property is a boolean (bool)
+                                        else if (prop.Name == "Status")
+                                        {
+                                            // Convert bool to string ("Active" or "Inactive") specifically for the "Status" property
+                                            bool boolValue = Convert.ToBoolean(columnValue);
+                                            string displayValue = boolValue ? "Active" : "Inactive";
+                                            prop.SetValue(entity, displayValue);
+                                        }
+                                        // Handle other types
+                                        else if (columnValue != null && prop.PropertyType.IsAssignableFrom(columnValue.GetType()))
+                                        {
+                                            prop.SetValue(entity, columnValue);
+                                        }
+                                        else if (prop.PropertyType == typeof(string))
+                                        {
+                                            prop.SetValue(entity, columnValue.ToString());
+                                        }
+                                        else if (prop.PropertyType == typeof(int) && columnValue is string)
+                                        {
+                                            prop.SetValue(entity, int.Parse(columnValue.ToString()));
                                         }
                                     }
-                                    // Check if the property is a boolean (bool)
-                                    else if (prop.Name == "Status")
-                                    {
-                                        // Convert bool to string ("Active" or "Inactive") specifically for the "Status" property
-                                        bool boolValue = (bool)columnValue;
-                                        string displayValue = boolValue ? "Active" : "Inactive";
-                                        prop.SetValue(entity, displayValue);
-                                    }
-                                    // Handle other types
-                                    else if (columnValue != null && prop.PropertyType.IsAssignableFrom(columnValue.GetType()))
-                                    {
-                                        prop.SetValue(entity, columnValue);
-                                    }
-                                    else if (prop.PropertyType == typeof(string))
-                                    {
-                                        prop.SetValue(entity, columnValue.ToString());
-                                    }
-                                    else if (prop.PropertyType == typeof(int) && columnValue is string)
-                                    {
-                                        prop.SetValue(entity, int.Parse(columnValue.ToString()));
-                                    }
                                 }
+                                resultList.Add(entity);
                             }
-                            resultList.Add(entity);
                         }
                     }
                 }
@@ -389,40 +473,67 @@ namespace JCBSystem.common
 
         // INSERT
         public async Task<object> InsertAsync<T>(
-            T entity,
-            string tableName,
-            SqlConnection connection,
-            SqlTransaction transaction
-        )
+          T entity,
+          string tableName,
+          IDbConnection connection,
+          IDbTransaction transaction)
         {
-            // Validate table name (you can use a whitelist or stricter validation)
             if (string.IsNullOrWhiteSpace(tableName) || !Regex.IsMatch(tableName, @"^[a-zA-Z0-9_]+$"))
-            {
                 throw new ArgumentException("Invalid table name.", nameof(tableName));
-            }
 
             try
             {
-                var properties = typeof(T).GetProperties().Where(p => p.CanRead).ToArray();
+                var properties = typeof(T).GetProperties()
+                                          .Where(p => p.CanRead && p.GetValue(entity) != null)
+                                          .ToArray();
 
-                string columns = string.Join(", ", properties.Select(p => p.Name));
-                string values = string.Join(", ", properties.Select(p => "@" + p.Name));
+                if (!properties.Any())
+                    throw new ArgumentException("Entity has no readable properties with values.");
 
-                // Autodetect primary key column
+                bool isOdbc = connection is OdbcConnection;
+                if (isOdbc)
+                    tableName.ToLower();
 
-                const string queryTemplate = "INSERT INTO [{0}] ({1}) VALUES ({2}) SELECT SCOPE_IDENTITY()";
-                string query = string.Format(queryTemplate, tableName, columns, values);
+                string columnList = string.Join(", ", properties.Select(p =>
+                    isOdbc ? $"`{p.Name}`" : $"[{p.Name}]"
+                ));
 
-                using (SqlCommand command = new SqlCommand(query, connection))
+                string valueList = string.Join(", ", properties.Select(p =>
+                    isOdbc ? "?" : "@" + p.Name
+                ));
+
+                string insertQuery = $"INSERT INTO {(isOdbc ? $"`{tableName}`" : $"[{tableName}]")} ({columnList}) VALUES ({valueList});";
+
+                using (var insertCommand = connection.CreateCommand())
                 {
-                    command.Transaction = transaction;
+                    insertCommand.Transaction = transaction;
+                    insertCommand.CommandText = insertQuery;
 
                     foreach (var prop in properties)
                     {
-                        command.Parameters.AddWithValue("@" + prop.Name, prop.GetValue(entity) ?? DBNull.Value);
+                        var param = insertCommand.CreateParameter();
+                        param.ParameterName = isOdbc ? null : "@" + prop.Name;
+                        param.Value = prop.GetValue(entity) ?? DBNull.Value;
+                        insertCommand.Parameters.Add(param);
                     }
 
-                    return await command.ExecuteScalarAsync();
+                    // 🔁 First, execute the INSERT
+                    if (insertCommand is DbCommand insertDbCommand)
+                        await insertDbCommand.ExecuteNonQueryAsync();
+                    else
+                        insertCommand.ExecuteNonQuery();
+
+                    // 🔁 Then, get the last inserted ID
+                    using (var identityCommand = connection.CreateCommand())
+                    {
+                        identityCommand.Transaction = transaction;
+                        identityCommand.CommandText = isOdbc ? "SELECT LAST_INSERT_ID();" : "SELECT SCOPE_IDENTITY();";
+
+                        if (identityCommand is DbCommand identityDbCommand)
+                            return await identityDbCommand.ExecuteScalarAsync();
+                        else
+                            return identityCommand.ExecuteScalar();
+                    }
                 }
             }
             catch (Exception ex)
@@ -434,79 +545,112 @@ namespace JCBSystem.common
 
 
 
+
+
+
         public async Task<int> UpdateAsync<T>(
            T entity,
            string tableName,
-           SqlConnection connection,
-           SqlTransaction transaction,
+           IDbConnection connection,
+           IDbTransaction transaction,
            string primaryKey = null,
            string whereCondition = null,
            List<object> additionalParameters = null)
         {
-            // Validate table name to prevent SQL injection
             if (string.IsNullOrWhiteSpace(tableName) || !Regex.IsMatch(tableName, @"^[a-zA-Z0-9_]+$"))
-            {
                 throw new ArgumentException("Invalid table name.", nameof(tableName));
-            }
 
             try
             {
+                var isOdbc = connection is OdbcConnection;
+
+                if (isOdbc)
+                    tableName.ToLower();
+
                 var properties = typeof(T).GetProperties().Where(p => p.CanRead).ToArray();
+
                 var setProperties = string.IsNullOrEmpty(primaryKey)
                     ? properties
                     : properties.Where(p => !string.Equals(p.Name, primaryKey, StringComparison.OrdinalIgnoreCase)).ToArray();
 
-                string setClause = string.Join(", ", setProperties.Select(p => $"{p.Name} = @{p.Name}"));
-
-                const string queryTemplatePrimaryKey = "UPDATE [{0}] SET {1} WHERE {2} = @{2}";
-                const string queryTemplateWhereCondition = "UPDATE [{0}] SET {1} WHERE {2}";
-                const string queryTemplateNoCondition = "UPDATE [{0}] SET {1}";
+                // SET clause
+                var setClause = string.Join(", ", setProperties.Select(p =>
+                    isOdbc ? $"`{p.Name}` = ?" : $"[{p.Name}] = @{p.Name}"
+                ));
 
                 string query;
 
                 if (!string.IsNullOrEmpty(primaryKey))
                 {
-                    query = string.Format(queryTemplatePrimaryKey, tableName, setClause, primaryKey);
+                    query = isOdbc
+                        ? $"UPDATE `{tableName}` SET {setClause} WHERE `{primaryKey}` = ?"
+                        : $"UPDATE [{tableName}] SET {setClause} WHERE [{primaryKey}] = @{primaryKey}";
                 }
                 else if (!string.IsNullOrEmpty(whereCondition))
                 {
-                    query = string.Format(queryTemplateWhereCondition, tableName, setClause, whereCondition);
+                    string finalQuery = Modules.ReplaceSharpWithParams(whereCondition, isOdbc);
+
+                    query = isOdbc
+                        ? $"UPDATE `{tableName}` SET {setClause} WHERE {finalQuery}"
+                        : $"UPDATE [{tableName}] SET {setClause} WHERE {finalQuery}";
                 }
                 else
                 {
-                    query = string.Format(queryTemplateNoCondition, tableName, setClause);
+                    query = isOdbc
+                        ? $"UPDATE `{tableName}` SET {setClause}"
+                        : $"UPDATE [{tableName}] SET {setClause}";
                 }
 
-                using (SqlCommand command = new SqlCommand(query, connection))
+                using (var command = connection.CreateCommand())
                 {
                     command.Transaction = transaction;
+                    command.CommandText = query;
 
-                    // Add parameters for SET clause
+                    // Parameter index tracking for ODBC (uses '?')
+                    int paramIndex = 0;
+
+                    // SET parameters
                     foreach (var prop in setProperties)
                     {
-                        command.Parameters.AddWithValue("@" + prop.Name, prop.GetValue(entity) ?? DBNull.Value);
+                        var param = command.CreateParameter();
+                        param.ParameterName = isOdbc ? null : "@" + prop.Name;
+                        param.Value = prop.GetValue(entity) ?? DBNull.Value;
+                        command.Parameters.Add(param);
+                        paramIndex++;
                     }
 
-                    // Add parameter for primary key if provided
+                    // Primary key parameter
                     if (!string.IsNullOrEmpty(primaryKey))
                     {
-                        var primaryKeyValue = typeof(T).GetProperty(primaryKey)?.GetValue(entity);
-                        command.Parameters.AddWithValue("@" + primaryKey, primaryKeyValue ?? DBNull.Value);
-                    }
-
-                    // Add additional parameters for WHERE condition
-                    if (additionalParameters != null && additionalParameters.Count > 0)
-                    {
-                        int filterIndex = 0;
-                        foreach (var param in additionalParameters)
+                        var pkProp = typeof(T).GetProperty(primaryKey);
+                        if (pkProp != null)
                         {
-                            string filterName = $"@param{filterIndex}";
-                            command.Parameters.AddWithValue(filterName, param ?? DBNull.Value);
-                            filterIndex++;
+                            var pkParam = command.CreateParameter();
+                            pkParam.ParameterName = isOdbc ? null : "@" + primaryKey;
+                            pkParam.Value = pkProp.GetValue(entity) ?? DBNull.Value;
+                            command.Parameters.Add(pkParam);
+                            paramIndex++;
                         }
                     }
 
-                    return await command.ExecuteNonQueryAsync();
+                    // Additional parameters (for WHERE clause)
+                    if (additionalParameters != null)
+                    {
+                        foreach (var val in additionalParameters)
+                        {
+                            var param = command.CreateParameter();
+                            param.ParameterName = isOdbc ? null : $"@param{paramIndex}";
+                            param.Value = val ?? DBNull.Value;
+                            command.Parameters.Add(param);
+                            paramIndex++;
+                        }
+                    }
+
+                    // Execute async if supported
+                    if (command is DbCommand dbCommand)
+                        return await dbCommand.ExecuteNonQueryAsync();
+                    else
+                        return command.ExecuteNonQuery();
                 }
             }
             catch (Exception ex)
@@ -517,47 +661,54 @@ namespace JCBSystem.common
 
 
 
+
+
         public async Task<int> DeleteAsync(
-            List<object> filter,
+            List<object> filterValues,
             string tableName,
-            SqlConnection connection,
-            SqlTransaction transaction,
+            IDbConnection connection,
+            IDbTransaction transaction,
             string whereConditions = null)
         {
-            // Validate table name to prevent SQL injection
             if (string.IsNullOrWhiteSpace(tableName) || !Regex.IsMatch(tableName, @"^[a-zA-Z0-9_]+$"))
-            {
                 throw new ArgumentException("Invalid table name.", nameof(tableName));
-            }
+
+            if (filterValues.Count > 0 && string.IsNullOrWhiteSpace(whereConditions))
+                throw new ArgumentException("WHERE conditions are required when filters are provided.");
+
+            var isOdbc = connection is OdbcConnection;
+
+            string finalQuery = Modules.ReplaceSharpWithParams(whereConditions, isOdbc);
+
+            if (isOdbc)
+                tableName.ToLower();
+
+            // 🔧 Build the DELETE query
+            string query = string.IsNullOrWhiteSpace(whereConditions)
+                ? (isOdbc ? $"DELETE FROM `{tableName}`" : $"DELETE FROM [{tableName}]")
+                : (isOdbc ? $"DELETE FROM `{tableName}` WHERE {finalQuery}" : $"DELETE FROM [{tableName}] WHERE {finalQuery}");
 
             try
             {
-                // Ensure WHERE condition is provided if filters are present
-                if (filter.Count > 0 && string.IsNullOrWhiteSpace(whereConditions))
-                {
-                    throw new ArgumentException("WHERE conditions in Deleting Data are required when filters are provided.");
-                }
-
-                const string queryTemplateWithoutWhere = "DELETE FROM [{0}]";
-                const string queryTemplateWithWhere = "DELETE FROM [{0}] WHERE {1}";
-
-                string query = string.IsNullOrWhiteSpace(whereConditions)
-                    ? string.Format(queryTemplateWithoutWhere, tableName)
-                    : string.Format(queryTemplateWithWhere, tableName, whereConditions);
-
-                using (SqlCommand command = new SqlCommand(query, connection))
+                using (var command = connection.CreateCommand())
                 {
                     command.Transaction = transaction;
+                    command.CommandText = query;
 
-                    // Add parameters for filters if any
-                    for (int i = 0; i < filter.Count; i++)
+                    // 🧷 Bind parameters (ODBC uses `?`, SQL Server uses `@paramX`)
+                    for (int i = 0; i < filterValues.Count; i++)
                     {
-                        string paramName = $"@param{i}";
-                        command.Parameters.AddWithValue(paramName, filter[i] ?? DBNull.Value);
+                        var parameter = command.CreateParameter();
+                        parameter.ParameterName = isOdbc ? null : $"@param{i}";
+                        parameter.Value = filterValues[i] ?? DBNull.Value;
+                        command.Parameters.Add(parameter);
                     }
 
-                    // Execute query and return the number of affected rows
-                    return await command.ExecuteNonQueryAsync();
+                    // ✅ Execute async if supported
+                    if (command is DbCommand dbCommand)
+                        return await dbCommand.ExecuteNonQueryAsync();
+                    else
+                        return command.ExecuteNonQuery();
                 }
             }
             catch (Exception ex)
@@ -568,21 +719,24 @@ namespace JCBSystem.common
 
 
 
-        public async Task CommitAndRollbackMethod(Func<SqlConnection, SqlTransaction, Task> action)
+
+
+
+        public async Task CommitAndRollbackMethod(Func<IDbConnection, IDbTransaction, Task> action)
         {
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (var connection = _connectionFactory.CreateConnection())
             {
-                await connection.OpenAsync();
-                using (SqlTransaction transaction = connection.BeginTransaction())
+                await OpenConnectionAsync(connection);
+
+                using (var transaction = connection.BeginTransaction())
                 {
                     try
                     {
-                        //Execute the action with the transaction and connection
                         await action(connection, transaction);
                     }
                     catch (Exception ex)
                     {
-                        transaction.Rollback(); // Rollback if there's an error
+                        transaction.Rollback(); // rollback on error
                         MessageBox.Show(
                             $"{ex.Message}",
                             "Error",
@@ -592,6 +746,17 @@ namespace JCBSystem.common
                     }
                 }
             }
+        }
+
+        private async Task OpenConnectionAsync(IDbConnection connection)
+        {
+            // IDbConnection does not have OpenAsync, so cast only if supported
+            if (connection is SqlConnection sqlConn)
+                await sqlConn.OpenAsync();
+            else if (connection is MySqlConnection mySqlConn)
+                await mySqlConn.OpenAsync();
+            else
+                connection.Open(); // fallback for ODBC or others
         }
     }
 }

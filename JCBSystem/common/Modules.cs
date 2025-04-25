@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -13,6 +14,17 @@ namespace JCBSystem.common
         public int pageNumber = 1; // Page number to fetch
         public int pageSize = 30;  // Number of items per page
         public int totalPages = 0;
+
+
+        public static string ReplaceSharpWithParams(string queryTemplate, bool isOdbc)
+        {
+            int counter = 0;
+            return Regex.Replace(queryTemplate, "#", match =>
+            {
+                return isOdbc ? "?" : $"@param{counter++}";
+            });
+        }
+
 
 
         public DataGridViewCellFormattingEventArgs CellFormatting(DataGridViewCellFormattingEventArgs e)

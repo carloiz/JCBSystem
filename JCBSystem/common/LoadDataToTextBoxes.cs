@@ -1,5 +1,8 @@
-﻿using System;
+﻿using JCBSystem.Connection;
+using System;
 using System.Collections.Generic;
+using System.Data.Common;
+using System.Data.Odbc;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
@@ -10,11 +13,14 @@ namespace JCBSystem.common
 {
     public class LoadDataToTextBoxes
     {
-        private readonly string connectionString;
+
+        private readonly ConnectionAsync async = new ConnectionAsync();
+
+        private readonly IDbConnectionFactory _connectionFactory;
 
         public LoadDataToTextBoxes()
         {
-            this.connectionString = DatabaseConfig.ConnectionString;
+            this._connectionFactory = ConnectionFactorySelector.GetFactory();
         }
 
         private readonly Modules modules = new Modules();
@@ -37,94 +43,113 @@ namespace JCBSystem.common
                 throw new ArgumentNullException(nameof(textBoxes), "TextBoxes list cannot be null or empty.");
             }
 
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            try
             {
-                SqlCommand command = new SqlCommand(query, connection);
-
-                // Add parameters to the command object, making sure none of them are null
-                if (parameters != null && parameters.Count > 0)
+                using (var connection = _connectionFactory.CreateConnection())
                 {
-                    foreach (var param in parameters)
-                    {
-                        if (param.Value == null)
-                        {
-                            throw new ArgumentNullException(param.Key, $"Parameter {param.Key} cannot be null.");
-                        }
-                        command.Parameters.AddWithValue(param.Key, param.Value);
-                    }
-                }
+                    await async.OpenConnectionAsync(connection);
 
-                try
-                {
-                    await connection.OpenAsync();
-                    SqlDataReader reader = await command.ExecuteReaderAsync();
+                    var isOdbc = connection is OdbcConnection;
 
-                    if (reader.HasRows)
+                    string finalQuery = Modules.ReplaceSharpWithParams(query, isOdbc);
+
+                    var command = connection.CreateCommand();
+
+                    command.CommandText = finalQuery;
+
+                    // Add parameters to the command object, making sure none of them are null
+                    if (parameters != null && parameters.Count > 0)
                     {
-                        while (await reader.ReadAsync())
+                        foreach (var param in parameters)
                         {
-                            // Map the data from reader to textboxes dynamically
-                            for (int i = 0; i < textBoxes.Count; i++)
+                            if (param.Value == null)
                             {
-                                if (i < reader.FieldCount && textBoxes[i] != null)
-                                {
-                                    var value = reader[i]?.ToString(); // Get the value from reader
+                                throw new ArgumentNullException(param.Key, $"Parameter {param.Key} cannot be null.");
+                            }
+                            var dbParam = command.CreateParameter();
+                            dbParam.ParameterName = param.Key;
+                            dbParam.Value = param.Value ?? DBNull.Value;
+                            command.Parameters.Add(dbParam);
 
-                                    if (string.IsNullOrEmpty(value))
+                        }
+                    }
+
+
+
+
+                    if (command is DbCommand dbCommand)
+                    {
+
+
+                        var reader = await dbCommand.ExecuteReaderAsync();
+
+                        if (reader.HasRows)
+                        {
+                            while (await reader.ReadAsync())
+                            {
+                                // Map the data from reader to textboxes dynamically
+                                for (int i = 0; i < textBoxes.Count; i++)
+                                {
+                                    if (i < reader.FieldCount && textBoxes[i] != null)
                                     {
-                                        textBoxes[i].Text = isTextBoxStr ? "" : "₱0.00"; // Set default value if empty or null
-                                    }
-                                    else if (enumColumns != null && enumColumns.ContainsKey(i) && int.TryParse(value, out int enumValue))
-                                    {
-                                        // Check if this field is an enum, based on the provided dictionary
-                                        Type enumType = enumColumns[i];
-                                        if (Enum.IsDefined(enumType, enumValue))
+                                        var value = reader[i]?.ToString(); // Get the value from reader
+
+                                        if (string.IsNullOrEmpty(value))
                                         {
-                                            // If it's a valid enum value, convert it to its enum name
-                                            textBoxes[i].Text = Enum.GetName(enumType, enumValue);
+                                            textBoxes[i].Text = isTextBoxStr ? "" : "₱0.00"; // Set default value if empty or null
+                                        }
+                                        else if (enumColumns != null && enumColumns.ContainsKey(i) && int.TryParse(value, out int enumValue))
+                                        {
+                                            // Check if this field is an enum, based on the provided dictionary
+                                            Type enumType = enumColumns[i];
+                                            if (Enum.IsDefined(enumType, enumValue))
+                                            {
+                                                // If it's a valid enum value, convert it to its enum name
+                                                textBoxes[i].Text = Enum.GetName(enumType, enumValue);
+                                            }
+                                            else
+                                            {
+                                                textBoxes[i].Text = enumValue.ToString(); // Default fallback
+                                            }
+                                        }
+                                        else if (double.TryParse(value, out double number))
+                                        {
+                                            // If the value is numeric, convert it to comma-separated format
+                                            textBoxes[i].Text = isFixedNumber ? value.ToString() : modules.ConvertToCommaSeparated((decimal)number).ToString();
+                                        }
+                                        else if (decimal.TryParse(value, out decimal decimalNum))
+                                        {
+                                            // If the value is numeric, convert it to comma-separated format
+                                            textBoxes[i].Text = isFixedNumber ? value.ToString() : modules.ConvertToCommaSeparated(decimalNum).ToString();
+                                        }
+                                        else if (bool.TryParse(value, out bool boolean))
+                                        {
+                                            // If the value is boolean, convert it to string representation
+                                            textBoxes[i].Text = boolean.ToString();
+                                        }
+                                        else if (DateTime.TryParse(value, out DateTime dateTime))
+                                        {
+                                            // If the value is a DateTime, format it
+                                            textBoxes[i].Text = dateTime.ToString(dateFormat);
                                         }
                                         else
                                         {
-                                            textBoxes[i].Text = enumValue.ToString(); // Default fallback
+                                            // If the value is not numeric, just display the raw value
+                                            textBoxes[i].Text = value.ToString();
                                         }
-                                    }
-                                    else if (double.TryParse(value, out double number))
-                                    {
-                                        // If the value is numeric, convert it to comma-separated format
-                                        textBoxes[i].Text = isFixedNumber ? value.ToString() : modules.ConvertToCommaSeparated((decimal)number).ToString();
-                                    }
-                                    else if (decimal.TryParse(value, out decimal decimalNum))
-                                    {
-                                        // If the value is numeric, convert it to comma-separated format
-                                        textBoxes[i].Text = isFixedNumber ? value.ToString() : modules.ConvertToCommaSeparated(decimalNum).ToString();
-                                    }
-                                    else if (bool.TryParse(value, out bool boolean))
-                                    {
-                                        // If the value is boolean, convert it to string representation
-                                        textBoxes[i].Text = boolean.ToString();
-                                    }
-                                    else if (DateTime.TryParse(value, out DateTime dateTime))
-                                    {
-                                        // If the value is a DateTime, format it
-                                        textBoxes[i].Text = dateTime.ToString(dateFormat);
-                                    }
-                                    else
-                                    {
-                                        // If the value is not numeric, just display the raw value
-                                        textBoxes[i].Text = value.ToString();
                                     }
                                 }
                             }
                         }
-                    }
 
-                    reader.Close();
+                        reader.Close();
+                    }
                 }
-                catch (Exception ex)
-                {
-                    // Handle exceptions here
-                    MessageBox.Show($"Error: {ex.Message}");
-                }
+            }
+            catch (Exception ex)
+            {
+                // Handle exceptions here
+                MessageBox.Show($"Error: {ex.Message}");
             }
         }
     }

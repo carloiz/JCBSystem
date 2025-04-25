@@ -5,5 +5,8 @@
     <Setting Name="JwtKey" Type="System.String" Scope="User">
       <Value Profile="(Default)">hY1bftwzB/2Ld0XgFZmz0n5C8D3k3e8Zcm29Z1k6yd8=</Value>
     </Setting>
+    <Setting Name="ConnectionName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">odbc</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

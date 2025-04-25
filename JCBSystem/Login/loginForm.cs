@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data;
 using System.Data.SqlClient;
 using System.Globalization;
 using System.Threading.Tasks;
@@ -20,21 +21,19 @@ namespace JCBSystem
 
         private readonly DataManager dataManager = new DataManager();
         private readonly MainForm mainForm;
-        private readonly string subKey;
 
 
-        public loginForm(MainForm mainForm,string subKey)
+        public loginForm(MainForm mainForm)
         {
             InitializeComponent();
             this.mainForm = mainForm;
-            this.subKey = subKey;
         }
 
 
         private async Task<(bool, string, string)> IsUserLoggedIn()
         {
 
-            var userRegistInfo = await registryKeys.GetRegistLocalSession<UserRegistInfo>(subKey);
+            var userRegistInfo = registryKeys.GetRegistLocalSession<UserRegistInfo>();
 
             if (userRegistInfo != null &&
                 !string.IsNullOrEmpty(userRegistInfo.AuthToken) &&
@@ -43,16 +42,16 @@ namespace JCBSystem
             {
                 try
                 {
-                    string token = DataProtectorHelper.Unprotect(userRegistInfo.AuthToken);
-                    string usernumber = DataProtectorHelper.Unprotect(userRegistInfo.UserNumber);
-                    string userlevel = DataProtectorHelper.Unprotect(userRegistInfo.UserLevel);
+                    string token = await DataProtectorHelper.Unprotect(userRegistInfo.AuthToken);
+                    string usernumber = await DataProtectorHelper.Unprotect(userRegistInfo.UserNumber);
+                    string userlevel = await DataProtectorHelper.Unprotect(userRegistInfo.UserLevel);
 
                     return (true, token, usernumber);
                 }
                 catch (Exception ex)
                 {
                     MessageBox.Show($"Decryption failed: {ex.Message}");
-                    Application.Exit();
+                    mainForm.userIsLogout();
                 }
             }
 
@@ -69,7 +68,7 @@ namespace JCBSystem
             });
         }
 
-        private async Task Process(SqlConnection connection, SqlTransaction transaction)
+        private async Task Process(IDbConnection connection, IDbTransaction transaction)
         {
             var (userLoggedIn, existingToken, usernumber) = await IsUserLoggedIn();
 
@@ -90,33 +89,17 @@ namespace JCBSystem
                     "Users",
                     new List<string> { "Password", "IsSessionActive", "Status", "UserLevel", "UserNumber" }, // this is for like SUM(Quantity) As TotalQuantity
                     new List<string> { "Password", "IsSessionActive", "Status", "UserLevel", "UserNumber" }, // this is fix where the name of field
-                    "Username = @param0"
+                    "Username = #"
                 );
 
-            // Call The Value
-            string userPassword =
-                GetValues.ContainsKey("Password") &&
-                !string.IsNullOrEmpty(GetValues["Password"]?.ToString())
-                ? Convert.ToString(GetValues["Password"])
-                : string.Empty;
 
-            string userNumber =
-                GetValues.ContainsKey("UserNumber") &&
-                !string.IsNullOrEmpty(GetValues["UserNumber"]?.ToString())
-                ? Convert.ToString(GetValues["UserNumber"])
-                : string.Empty;
+            string userPassword = GetValues.TryGetValue("Password", out var temp) ? temp?.ToString() : null;
 
-            string userLevel =
-                GetValues.ContainsKey("UserLevel") &&
-                !string.IsNullOrEmpty(GetValues["UserLevel"]?.ToString())
-                ? Convert.ToString(GetValues["UserLevel"])
-                : string.Empty;
+            string userNumber = GetValues.TryGetValue("UserNumber", out var num) && num != null ? num.ToString() : string.Empty;
 
-            bool userSession =
-                GetValues.ContainsKey("IsSessionActive") &&
-                !string.IsNullOrEmpty(GetValues["IsSessionActive"]?.ToString())
-                ? Convert.ToBoolean(GetValues["IsSessionActive"])
-                : false;
+            string userLevel = GetValues.TryGetValue("UserLevel", out var lvl) && lvl != null ? lvl.ToString() : string.Empty;
+
+            bool userSession = GetValues.TryGetValue("IsSessionActive", out var session) && bool.TryParse(session?.ToString(), out var sessVal) ? sessVal : false;
 
             bool userStatus =
                 GetValues.ContainsKey("Status") &&
@@ -146,13 +129,13 @@ namespace JCBSystem
             Dictionary<string, string> keyValues = new Dictionary<string, string>
             {
                 { "Username", txtUsername.Text },
-                { "UserLevel", txtPassword.Text }
+                { "UserLevel", userLevel }
             };
 
             var tokenString = JwtTokenHelper.GetJWTToken(keyValues);
 
             /////// FOR PRIMARY KEY ONLY 1 DATA UPDATE
-            var userDto = new UserUpdateDto
+            var userDto = new LoginUpdateDto
             {
                 UserNumber = userNumber, // always have this for Primary Key
                 IsSessionActive = true,
@@ -171,12 +154,12 @@ namespace JCBSystem
             // Write to the registry
             var userRegistInfo = new UserRegistInfo
             {
-                AuthToken = DataProtectorHelper.Protect(tokenString),
-                UserNumber = DataProtectorHelper.Protect(userNumber),
-                UserLevel = DataProtectorHelper.Protect(userLevel),
+                AuthToken = await DataProtectorHelper.Protect(tokenString),
+                UserNumber = await DataProtectorHelper.Protect(userNumber),
+                UserLevel = await DataProtectorHelper.Protect(userLevel),
             };
 
-            await registryKeys.CreateRegistLocalSession(userRegistInfo, subKey);
+            registryKeys.CreateRegistLocalSession(userRegistInfo);
 
             transaction.Commit(); // Commit changes
 

@@ -22,7 +22,6 @@ namespace JCBSystem.Users
         {
             InitializeComponent();
             get_all_data();
-
         }
 
 
@@ -72,7 +71,7 @@ namespace JCBSystem.Users
 
             foreach (DataGridViewColumn column in dataGridView1.Columns)
             {
-                if (column.Name == "ShiftId" || column.Name == "xCounter")
+                if (column.Name == "UserNumber" || column.Name == "Username" || column.Name == "UserLevel" || column.Name == "Status" || column.Name == "IsSessionActive")
                 {
                     column.AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells; // Adjust based on content
                 }
@@ -119,6 +118,14 @@ namespace JCBSystem.Users
 
                 }
             }
+
+            if (string.IsNullOrEmpty(userNumber))
+            {
+                updateToolStripMenuItem.Visible = false;
+                return;
+            }
+
+            updateToolStripMenuItem.Visible = true;
         }
 
         private void addNewToolStripMenuItem_Click(object sender, EventArgs e)
@@ -130,11 +137,7 @@ namespace JCBSystem.Users
 
         private void updateToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrEmpty(userNumber))
-            {
-                return;
-            }
-            UserManagementForm user = new UserManagementForm(this, false);
+            UserManagementForm user = new UserManagementForm(this, false, userNumber);
             FormHelper.OpenFormWithFade(user, true);
         }
     }

@@ -1,19 +1,11 @@
 ﻿using JCBSystem.common;
 using JCBSystem.Login;
 using JCBSystem.Users;
-using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.Drawing;
-using System.Globalization;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Security.Claims;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -26,10 +18,11 @@ namespace JCBSystem
 
         //TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
 
-
         private readonly RegistryKeys registryKeys = new RegistryKeys();
 
         private readonly CheckIfRecordExists recordExists = new CheckIfRecordExists();
+
+        private readonly GetFieldsValues getFieldsValues = new GetFieldsValues();   
 
         private readonly DataManager dataManager = new DataManager();
 
@@ -37,16 +30,17 @@ namespace JCBSystem
 
         private TabControl tabControlMain = new TabControl();
 
-        private readonly string subKey = @"Software\JCBSystem";
 
         public MainForm()
         {
             InitializeComponent();
             InitializeTabControl();
            _ = GetSession();
-
         }
+        
 
+
+        #region -- TAB CONTROLLER --
         private void InitializeTabControl()
         {
             tabControlMain = new TabControl
@@ -173,7 +167,10 @@ namespace JCBSystem
 
             openForms[title] = form;
             FormHelper.OpenFormWithFade(form, false);
-        }
+        } 
+        #endregion
+
+
 
         public void userIsLogin()
         {
@@ -184,31 +181,33 @@ namespace JCBSystem
         }
 
 
-        private void userIsLogout()
+        public void userIsLogout()
         {
             panel1.Visible = false;
             UsersBtn.Visible = false;
             SettingsBtn.Visible = false;
             mainPanel.Visible = false;
 
-            loginForm loginForm = new loginForm(this, subKey);
+            loginForm loginForm = new loginForm(this);
             loginForm.MdiParent = this; // Set parent
             FormHelper.OpenFormWithFade(loginForm, false);
+
+            // Gamitin ang `Shown` event para i-focus ang textbox kapag visible na ang form
+            loginForm.Shown += (s, e) => loginForm.txtUsername.Focus();
+
         }
 
         public async Task GetSession()
         {
-
             await dataManager.CommitAndRollbackMethod(async (connection, transaction) =>
             {
-                await Process(connection, transaction); // Tawagin ang Process method na may transaction at connection
+                await ProcessSession(connection, transaction); // Tawagin ang Process method na may transaction at connection
             });
-
         }
 
-        private async Task Process(SqlConnection connection, SqlTransaction transaction)
+        private async Task ProcessSession(IDbConnection connection, IDbTransaction transaction)
         {
-            var userRegistInfo = await registryKeys.GetRegistLocalSession<UserRegistInfo>(subKey);
+            var userRegistInfo = registryKeys.GetRegistLocalSession<UserRegistInfo>();
 
             string token = userRegistInfo.AuthToken;
             string usernumber = userRegistInfo.UserNumber;
@@ -217,19 +216,21 @@ namespace JCBSystem
             if (string.IsNullOrEmpty(token) || string.IsNullOrEmpty(usernumber) || string.IsNullOrEmpty(userlevel))
             {
                 userIsLogout();
-                throw new KeyNotFoundException("Token username or user level not found");
+                return;
+
+                // throw new KeyNotFoundException("Token username or user level not found");
             }
 
-            token = DataProtectorHelper.Unprotect(token);
-            usernumber = DataProtectorHelper.Unprotect(usernumber);
-            userlevel = DataProtectorHelper.Unprotect(userlevel);
+            token = await DataProtectorHelper.Unprotect(token);
+            usernumber = await DataProtectorHelper.Unprotect(usernumber);
+            userlevel = await DataProtectorHelper.Unprotect(userlevel);
 
             if (JwtTokenHelper.IsTokenExpired(token))
             {
                 bool isExist = await recordExists.CheckIfRecordExistsAsync(
                     new List<object> { usernumber },
                     "Users",
-                    "UserNumber = @param0 AND IsSessionActive = 1"
+                    "UserNumber = # AND IsSessionActive = 1"
                 );
 
                 if (!isExist)
@@ -238,7 +239,7 @@ namespace JCBSystem
                     throw new KeyNotFoundException("User not found in Session.");
                 }
 
-                var userDto = new UserUpdateDto
+                var userDto = new LoginUpdateDto
                 {
                     UserNumber = usernumber, // always have this for Primary Key
                     IsSessionActive = false,
@@ -253,13 +254,13 @@ namespace JCBSystem
                     primaryKey: "UserNumber"
                 );
 
-                await registryKeys.DeleteRegistLocalSession<UserRegistInfo>(subKey);
+                await registryKeys.DeleteRegistLocalSession<UserRegistInfo>();
 
                 userIsLogout();
                 
                 transaction.Commit(); // Commit changes
-                
-                MessageBox.Show("Token Expired","",MessageBoxButtons.OK,MessageBoxIcon.Exclamation);
+
+                Console.WriteLine("Token Expired","",MessageBoxButtons.OK,MessageBoxIcon.Exclamation);
                 return;
             }
 
@@ -278,11 +279,116 @@ namespace JCBSystem
         private void UsersBtn_Click(object sender, EventArgs e)
         {
             OpenFormInTab(new UsersListForm(), "Users");
-        }  
+        }
 
         private void SettingsBtn_Click(object sender, EventArgs e)
         {
-            OpenFormInTab(new loginForm(this, subKey), "Settings");
+            OpenFormInTab(new loginForm(this), "Settings");
         }
+
+        private async void logoutBtn_Click(object sender, EventArgs e)
+        {
+            await ServiceLogout();
+        }
+
+
+        public async Task ServiceLogout()
+        {
+            await dataManager.CommitAndRollbackMethod(async (connection, transaction) =>
+            {
+                await ProcessLogout(connection, transaction); // Tawagin ang Process method na may transaction at connection
+            });
+        }
+
+        private async Task ProcessLogout(IDbConnection connection, IDbTransaction transaction)
+        {
+
+            var userRegistInfo = registryKeys.GetRegistLocalSession<UserRegistInfo>();
+
+            string token = userRegistInfo.AuthToken;
+            string usernumber = userRegistInfo.UserNumber;
+            string userlevel = userRegistInfo.UserLevel;
+
+            if (string.IsNullOrEmpty(token) || string.IsNullOrEmpty(usernumber) || string.IsNullOrEmpty(userlevel))
+            {
+                userIsLogout();
+                return;
+            }
+
+            token = await DataProtectorHelper.Unprotect(token);
+            usernumber = await DataProtectorHelper.Unprotect(usernumber);
+            userlevel = await DataProtectorHelper.Unprotect(userlevel);
+
+
+            Dictionary<string, object> GetValues = await
+                getFieldsValues.GetFieldValuesAsync(
+                    new List<object> { usernumber }, // Parameters
+                    "Users",
+                    new List<string> { "UserNumber", "IsSessionActive", "CurrentToken" }, // this is for like SUM(Quantity) As TotalQuantity
+                    new List<string> { "UserNumber", "IsSessionActive", "CurrentToken" }, // this is fix where the name of field
+                    "UserNumber = #"
+                );
+
+            string userNumber =
+                GetValues.ContainsKey("UserNumber") &&
+                !string.IsNullOrEmpty(GetValues["UserNumber"]?.ToString())
+                ? Convert.ToString(GetValues["UserNumber"])
+                : string.Empty;
+
+            string userToken =
+                GetValues.ContainsKey("CurrentToken") &&
+                !string.IsNullOrEmpty(GetValues["CurrentToken"]?.ToString())
+                ? Convert.ToString(GetValues["CurrentToken"])
+                : string.Empty;
+
+            bool userSession =
+                GetValues.ContainsKey("IsSessionActive") &&
+                !string.IsNullOrEmpty(GetValues["IsSessionActive"]?.ToString())
+                ? Convert.ToBoolean(GetValues["IsSessionActive"])
+                : false;
+
+
+            if (userNumber == null)
+            {
+                throw new KeyNotFoundException("User not found.");
+            }
+
+            if (userSession == false)
+            {
+                throw new KeyNotFoundException("The user is already inactive.");
+            }
+
+            if (!PasswordHelper.VerifyPassword(token, userToken))
+            {
+                // Optionally, handle the case where the token does not match
+                throw new KeyNotFoundException("Token does not match.");
+            }
+
+
+            var userDto = new LoginUpdateDto
+            {
+                UserNumber = usernumber, // always have this for Primary Key
+                IsSessionActive = false,
+                CurrentToken = null
+            };
+
+            await dataManager.UpdateAsync(
+                entity: userDto,
+                tableName: "Users",
+                connection: connection,
+                transaction: transaction,
+                primaryKey: "UserNumber"
+            );
+
+
+            // Call the method to delete registry values
+            await registryKeys.DeleteRegistLocalSession<UserRegistInfo>();
+
+
+            transaction.Commit(); // Commit changes
+            userIsLogout();
+
+        }
+
     }
 }

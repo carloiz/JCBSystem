@@ -7,9 +7,9 @@ namespace JCBSystem.common
 {
     public class RegistryKeys
     {
+        private readonly string subKey = @"Software\JCBSystem";
 
-
-        public async Task<T> GetRegistLocalSession<T>(string subKey) where T : class, new()
+        public T GetRegistLocalSession<T>() where T : class, new()
         {
             var regInfo = new T();
 
@@ -42,7 +42,7 @@ namespace JCBSystem.common
                         catch (Exception ex)
                         {
                             // Log or handle the exception as needed
-                            Console.WriteLine($"Failed to get or set registry value {propertyName}: {ex.Message}");
+                            throw new ArgumentException($"Failed to get or set registry value {propertyName}: {ex.Message}");
                         }
                     }
                 }
@@ -51,7 +51,7 @@ namespace JCBSystem.common
             return regInfo;
         }
 
-        public async Task DeleteRegistLocalSession<T>(string subKey) where T : class, new()
+        public Task DeleteRegistLocalSession<T>() where T : class, new()
         {
             var regInfo = new T();
 
@@ -84,9 +84,11 @@ namespace JCBSystem.common
                     }
                 }
             }
+
+            return Task.CompletedTask;
         }
 
-        public async Task CreateRegistLocalSession<T>(T regInfo, string subKey) where T : class
+        public void CreateRegistLocalSession<T>(T regInfo) where T : class
         {
             using (var key = Registry.CurrentUser.CreateSubKey(subKey))
             {

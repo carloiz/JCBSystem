@@ -1,7 +1,10 @@
-﻿using System;
+﻿using JCBSystem.Connection;
+using JCBSystem.Users;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -18,15 +21,17 @@ namespace JCBSystem
         [STAThread] 
         static void Main()
         {
-            string connectionString = ConfigurationManager.ConnectionStrings["MyDbConnection"].ConnectionString;
 
+            IDbConnectionFactory _connectionFactory = ConnectionFactorySelector.GetFactory();
+            
             EncryptConnectionString();
 
-            using (SqlConnection conn = new SqlConnection(connectionString))
+
+            using (var connection = _connectionFactory.CreateConnection())
             {
                 try
                 {
-                    conn.Open();
+                    connection.Open();
                     Console.WriteLine("Connected successfully using Windows Authentication!");
                 }
                 catch (Exception ex)
@@ -35,6 +40,7 @@ namespace JCBSystem
                     Application.Exit();
                 }
             }
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new MainForm());
@@ -77,5 +83,11 @@ namespace JCBSystem
                 Console.WriteLine("Connection string is already decrypted.");
             }
         }
+
+
+
+
+
+
     }
 }

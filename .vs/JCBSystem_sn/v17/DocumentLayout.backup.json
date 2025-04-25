@@ -1,34 +1,74 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\Avtech\\Desktop\\JCBSystem\\",
+  "WorkspaceRootPath": "C:\\Users\\loiz\\Desktop\\JCBSystem_sn\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{098701EC-D141-4043-B835-36BB128106A2}|JCBSystem\\JCBSystem.csproj|C:\\Users\\Avtech\\Desktop\\JCBSystem\\jcbsystem\\mainform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
-      "RelativeMoniker": "D:0:0:{098701EC-D141-4043-B835-36BB128106A2}|JCBSystem\\JCBSystem.csproj|solutionrelative:jcbsystem\\mainform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+      "AbsoluteMoniker": "D:0:0:{098701EC-D141-4043-B835-36BB128106A2}|JCBSystem\\JCBSystem.csproj|c:\\users\\loiz\\desktop\\jcbsystem_sn\\jcbsystem\\common\\modules.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{098701EC-D141-4043-B835-36BB128106A2}|JCBSystem\\JCBSystem.csproj|solutionrelative:jcbsystem\\common\\modules.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{098701EC-D141-4043-B835-36BB128106A2}|JCBSystem\\JCBSystem.csproj|c:\\users\\avtech\\desktop\\jcbsystem\\jcbsystem\\mainform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{098701EC-D141-4043-B835-36BB128106A2}|JCBSystem\\JCBSystem.csproj|c:\\users\\loiz\\desktop\\jcbsystem_sn\\jcbsystem\\common\\datamanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{098701EC-D141-4043-B835-36BB128106A2}|JCBSystem\\JCBSystem.csproj|solutionrelative:jcbsystem\\common\\datamanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{098701EC-D141-4043-B835-36BB128106A2}|JCBSystem\\JCBSystem.csproj|c:\\users\\loiz\\desktop\\jcbsystem_sn\\jcbsystem\\connection\\connectionfactoryselector.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{098701EC-D141-4043-B835-36BB128106A2}|JCBSystem\\JCBSystem.csproj|solutionrelative:jcbsystem\\connection\\connectionfactoryselector.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{098701EC-D141-4043-B835-36BB128106A2}|JCBSystem\\JCBSystem.csproj|c:\\users\\loiz\\desktop\\jcbsystem_sn\\jcbsystem\\app.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}",
+      "RelativeMoniker": "D:0:0:{098701EC-D141-4043-B835-36BB128106A2}|JCBSystem\\JCBSystem.csproj|solutionrelative:jcbsystem\\app.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{098701EC-D141-4043-B835-36BB128106A2}|JCBSystem\\JCBSystem.csproj|c:\\users\\loiz\\desktop\\jcbsystem_sn\\jcbsystem\\connection\\idbconnectionfactory.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{098701EC-D141-4043-B835-36BB128106A2}|JCBSystem\\JCBSystem.csproj|solutionrelative:jcbsystem\\connection\\idbconnectionfactory.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{098701EC-D141-4043-B835-36BB128106A2}|JCBSystem\\JCBSystem.csproj|c:\\users\\loiz\\desktop\\jcbsystem_sn\\jcbsystem\\connection\\sqlconnectionfactory.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{098701EC-D141-4043-B835-36BB128106A2}|JCBSystem\\JCBSystem.csproj|solutionrelative:jcbsystem\\connection\\sqlconnectionfactory.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{098701EC-D141-4043-B835-36BB128106A2}|JCBSystem\\JCBSystem.csproj|c:\\users\\loiz\\desktop\\jcbsystem_sn\\jcbsystem\\common\\checkifrecordexists.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{098701EC-D141-4043-B835-36BB128106A2}|JCBSystem\\JCBSystem.csproj|solutionrelative:jcbsystem\\common\\checkifrecordexists.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{098701EC-D141-4043-B835-36BB128106A2}|JCBSystem\\JCBSystem.csproj|c:\\users\\loiz\\desktop\\jcbsystem_sn\\jcbsystem\\mainform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{098701EC-D141-4043-B835-36BB128106A2}|JCBSystem\\JCBSystem.csproj|solutionrelative:jcbsystem\\mainform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{098701EC-D141-4043-B835-36BB128106A2}|JCBSystem\\JCBSystem.csproj|C:\\Users\\Avtech\\Desktop\\JCBSystem\\jcbsystem\\common\\jwttokenhelper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{098701EC-D141-4043-B835-36BB128106A2}|JCBSystem\\JCBSystem.csproj|solutionrelative:jcbsystem\\common\\jwttokenhelper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{098701EC-D141-4043-B835-36BB128106A2}|JCBSystem\\JCBSystem.csproj|c:\\users\\loiz\\desktop\\jcbsystem_sn\\jcbsystem\\users\\userslistform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{098701EC-D141-4043-B835-36BB128106A2}|JCBSystem\\JCBSystem.csproj|solutionrelative:jcbsystem\\users\\userslistform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{098701EC-D141-4043-B835-36BB128106A2}|JCBSystem\\JCBSystem.csproj|C:\\Users\\Avtech\\Desktop\\JCBSystem\\jcbsystem\\login\\loginform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{098701EC-D141-4043-B835-36BB128106A2}|JCBSystem\\JCBSystem.csproj|c:\\users\\loiz\\desktop\\jcbsystem_sn\\jcbsystem\\users\\usermanagementform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{098701EC-D141-4043-B835-36BB128106A2}|JCBSystem\\JCBSystem.csproj|solutionrelative:jcbsystem\\users\\usermanagementform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{098701EC-D141-4043-B835-36BB128106A2}|JCBSystem\\JCBSystem.csproj|c:\\users\\loiz\\desktop\\jcbsystem_sn\\jcbsystem\\login\\loginform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{098701EC-D141-4043-B835-36BB128106A2}|JCBSystem\\JCBSystem.csproj|solutionrelative:jcbsystem\\login\\loginform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{098701EC-D141-4043-B835-36BB128106A2}|JCBSystem\\JCBSystem.csproj|C:\\Users\\Avtech\\Desktop\\JCBSystem\\jcbsystem\\login\\loginform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
-      "RelativeMoniker": "D:0:0:{098701EC-D141-4043-B835-36BB128106A2}|JCBSystem\\JCBSystem.csproj|solutionrelative:jcbsystem\\login\\loginform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+      "AbsoluteMoniker": "D:0:0:{098701EC-D141-4043-B835-36BB128106A2}|JCBSystem\\JCBSystem.csproj|c:\\users\\loiz\\desktop\\jcbsystem_sn\\jcbsystem\\common\\loaddatatotextboxes.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{098701EC-D141-4043-B835-36BB128106A2}|JCBSystem\\JCBSystem.csproj|solutionrelative:jcbsystem\\common\\loaddatatotextboxes.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{098701EC-D141-4043-B835-36BB128106A2}|JCBSystem\\JCBSystem.csproj|C:\\Users\\Avtech\\Desktop\\JCBSystem\\jcbsystem\\common\\dataprotectorhelper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{098701EC-D141-4043-B835-36BB128106A2}|JCBSystem\\JCBSystem.csproj|c:\\users\\loiz\\desktop\\jcbsystem_sn\\jcbsystem\\common\\getfieldsvalues.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{098701EC-D141-4043-B835-36BB128106A2}|JCBSystem\\JCBSystem.csproj|solutionrelative:jcbsystem\\common\\getfieldsvalues.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{098701EC-D141-4043-B835-36BB128106A2}|JCBSystem\\JCBSystem.csproj|c:\\users\\loiz\\desktop\\jcbsystem_sn\\jcbsystem\\common\\jwttokenhelper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{098701EC-D141-4043-B835-36BB128106A2}|JCBSystem\\JCBSystem.csproj|solutionrelative:jcbsystem\\common\\jwttokenhelper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{098701EC-D141-4043-B835-36BB128106A2}|JCBSystem\\JCBSystem.csproj|c:\\users\\loiz\\desktop\\jcbsystem_sn\\jcbsystem\\common\\getcomboboxattributes.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{098701EC-D141-4043-B835-36BB128106A2}|JCBSystem\\JCBSystem.csproj|solutionrelative:jcbsystem\\common\\getcomboboxattributes.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{098701EC-D141-4043-B835-36BB128106A2}|JCBSystem\\JCBSystem.csproj|c:\\users\\loiz\\desktop\\jcbsystem_sn\\jcbsystem\\common\\generatenextvalues.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{098701EC-D141-4043-B835-36BB128106A2}|JCBSystem\\JCBSystem.csproj|solutionrelative:jcbsystem\\common\\generatenextvalues.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{098701EC-D141-4043-B835-36BB128106A2}|JCBSystem\\JCBSystem.csproj|c:\\users\\loiz\\desktop\\jcbsystem_sn\\jcbsystem\\common\\dataprotectorhelper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{098701EC-D141-4043-B835-36BB128106A2}|JCBSystem\\JCBSystem.csproj|solutionrelative:jcbsystem\\common\\dataprotectorhelper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{098701EC-D141-4043-B835-36BB128106A2}|JCBSystem\\JCBSystem.csproj|C:\\Users\\Avtech\\Desktop\\JCBSystem\\jcbsystem\\users\\usersdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{098701EC-D141-4043-B835-36BB128106A2}|JCBSystem\\JCBSystem.csproj|solutionrelative:jcbsystem\\users\\usersdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -38,94 +78,228 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 5,
+          "SelectedChildIndex": 8,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "DataProtectorHelper.cs",
-              "DocumentMoniker": "C:\\Users\\Avtech\\Desktop\\JCBSystem\\JCBSystem\\common\\DataProtectorHelper.cs",
-              "RelativeDocumentMoniker": "JCBSystem\\common\\DataProtectorHelper.cs",
-              "ToolTip": "C:\\Users\\Avtech\\Desktop\\JCBSystem\\JCBSystem\\common\\DataProtectorHelper.cs",
-              "RelativeToolTip": "JCBSystem\\common\\DataProtectorHelper.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-05T06:17:22.394Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "loginForm.cs [Design]",
-              "DocumentMoniker": "C:\\Users\\Avtech\\Desktop\\JCBSystem\\JCBSystem\\Login\\loginForm.cs",
-              "RelativeDocumentMoniker": "JCBSystem\\Login\\loginForm.cs",
-              "ToolTip": "C:\\Users\\Avtech\\Desktop\\JCBSystem\\JCBSystem\\Login\\loginForm.cs [Design]",
-              "RelativeToolTip": "JCBSystem\\Login\\loginForm.cs [Design]",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-05T05:59:12.704Z",
-              "EditorCaption": " [Design]"
+              "DocumentIndex": 3,
+              "Title": "App.config",
+              "DocumentMoniker": "C:\\Users\\loiz\\Desktop\\JCBSystem_sn\\JCBSystem\\App.config",
+              "RelativeDocumentMoniker": "JCBSystem\\App.config",
+              "ToolTip": "C:\\Users\\loiz\\Desktop\\JCBSystem_sn\\JCBSystem\\App.config",
+              "RelativeToolTip": "JCBSystem\\App.config",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAdAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000601|",
+              "WhenOpened": "2025-04-25T11:38:42.64Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 2,
-              "Title": "JwtTokenHelper.cs",
-              "DocumentMoniker": "C:\\Users\\Avtech\\Desktop\\JCBSystem\\JCBSystem\\common\\JwtTokenHelper.cs",
-              "RelativeDocumentMoniker": "JCBSystem\\common\\JwtTokenHelper.cs",
-              "ToolTip": "C:\\Users\\Avtech\\Desktop\\JCBSystem\\JCBSystem\\common\\JwtTokenHelper.cs",
-              "RelativeToolTip": "JCBSystem\\common\\JwtTokenHelper.cs",
-              "ViewState": "AgIAAAYAAAAAAAAAAAAAACAAAAAfAAAAAAAAAA==",
+              "Title": "ConnectionFactorySelector.cs",
+              "DocumentMoniker": "C:\\Users\\loiz\\Desktop\\JCBSystem_sn\\JCBSystem\\Connection\\ConnectionFactorySelector.cs",
+              "RelativeDocumentMoniker": "JCBSystem\\Connection\\ConnectionFactorySelector.cs",
+              "ToolTip": "C:\\Users\\loiz\\Desktop\\JCBSystem_sn\\JCBSystem\\Connection\\ConnectionFactorySelector.cs",
+              "RelativeToolTip": "JCBSystem\\Connection\\ConnectionFactorySelector.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-05T05:54:59.345Z",
+              "WhenOpened": "2025-04-25T11:38:26.954Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "SqlConnectionFactory.cs",
+              "DocumentMoniker": "C:\\Users\\loiz\\Desktop\\JCBSystem_sn\\JCBSystem\\Connection\\SqlConnectionFactory.cs",
+              "RelativeDocumentMoniker": "JCBSystem\\Connection\\SqlConnectionFactory.cs",
+              "ToolTip": "C:\\Users\\loiz\\Desktop\\JCBSystem_sn\\JCBSystem\\Connection\\SqlConnectionFactory.cs",
+              "RelativeToolTip": "JCBSystem\\Connection\\SqlConnectionFactory.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-25T11:38:23.618Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "JwtTokenHelper.cs",
+              "DocumentMoniker": "C:\\Users\\loiz\\Desktop\\JCBSystem_sn\\JCBSystem\\common\\JwtTokenHelper.cs",
+              "RelativeDocumentMoniker": "JCBSystem\\common\\JwtTokenHelper.cs",
+              "ToolTip": "C:\\Users\\loiz\\Desktop\\JCBSystem_sn\\JCBSystem\\common\\JwtTokenHelper.cs",
+              "RelativeToolTip": "JCBSystem\\common\\JwtTokenHelper.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-25T11:28:49.835Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "GetFieldsValues.cs",
+              "DocumentMoniker": "C:\\Users\\loiz\\Desktop\\JCBSystem_sn\\JCBSystem\\common\\GetFieldsValues.cs",
+              "RelativeDocumentMoniker": "JCBSystem\\common\\GetFieldsValues.cs",
+              "ToolTip": "C:\\Users\\loiz\\Desktop\\JCBSystem_sn\\JCBSystem\\common\\GetFieldsValues.cs",
+              "RelativeToolTip": "JCBSystem\\common\\GetFieldsValues.cs",
+              "ViewState": "AgIAAAwAAAAAAAAAAAAAAC8AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-25T11:27:29.923Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "GetComboBoxAttributes.cs",
+              "DocumentMoniker": "C:\\Users\\loiz\\Desktop\\JCBSystem_sn\\JCBSystem\\common\\GetComboBoxAttributes.cs",
+              "RelativeDocumentMoniker": "JCBSystem\\common\\GetComboBoxAttributes.cs",
+              "ToolTip": "C:\\Users\\loiz\\Desktop\\JCBSystem_sn\\JCBSystem\\common\\GetComboBoxAttributes.cs",
+              "RelativeToolTip": "JCBSystem\\common\\GetComboBoxAttributes.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-25T11:27:05.214Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "GenerateNextValues.cs",
+              "DocumentMoniker": "C:\\Users\\loiz\\Desktop\\JCBSystem_sn\\JCBSystem\\common\\GenerateNextValues.cs",
+              "RelativeDocumentMoniker": "JCBSystem\\common\\GenerateNextValues.cs",
+              "ToolTip": "C:\\Users\\loiz\\Desktop\\JCBSystem_sn\\JCBSystem\\common\\GenerateNextValues.cs",
+              "RelativeToolTip": "JCBSystem\\common\\GenerateNextValues.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACMAAAA7AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-25T11:26:39.402Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 1,
-              "Title": "MainForm.cs",
-              "DocumentMoniker": "C:\\Users\\Avtech\\Desktop\\JCBSystem\\JCBSystem\\MainForm.cs",
-              "RelativeDocumentMoniker": "JCBSystem\\MainForm.cs",
-              "ToolTip": "C:\\Users\\Avtech\\Desktop\\JCBSystem\\JCBSystem\\MainForm.cs",
-              "RelativeToolTip": "JCBSystem\\MainForm.cs",
-              "ViewState": "AgIAAOUAAAAAAAAAAAAuwP4AAAAAAAAAAAAAAA==",
+              "Title": "DataManager.cs",
+              "DocumentMoniker": "C:\\Users\\loiz\\Desktop\\JCBSystem_sn\\JCBSystem\\common\\DataManager.cs",
+              "RelativeDocumentMoniker": "JCBSystem\\common\\DataManager.cs",
+              "ToolTip": "C:\\Users\\loiz\\Desktop\\JCBSystem_sn\\JCBSystem\\common\\DataManager.cs",
+              "RelativeToolTip": "JCBSystem\\common\\DataManager.cs",
+              "ViewState": "AgIAAJkCAAAAAAAAAAA1wKYCAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-05T05:37:21.695Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "loginForm.cs",
-              "DocumentMoniker": "C:\\Users\\Avtech\\Desktop\\JCBSystem\\JCBSystem\\Login\\loginForm.cs",
-              "RelativeDocumentMoniker": "JCBSystem\\Login\\loginForm.cs",
-              "ToolTip": "C:\\Users\\Avtech\\Desktop\\JCBSystem\\JCBSystem\\Login\\loginForm.cs",
-              "RelativeToolTip": "JCBSystem\\Login\\loginForm.cs",
-              "ViewState": "AgIAABcAAAAAAAAAAAAQwBUAAAAmAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-05T05:36:46.751Z",
+              "WhenOpened": "2025-04-25T11:20:01.579Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "MainForm.cs [Design]",
-              "DocumentMoniker": "C:\\Users\\Avtech\\Desktop\\JCBSystem\\JCBSystem\\MainForm.cs",
-              "RelativeDocumentMoniker": "JCBSystem\\MainForm.cs",
-              "ToolTip": "C:\\Users\\Avtech\\Desktop\\JCBSystem\\JCBSystem\\MainForm.cs [Design]",
-              "RelativeToolTip": "JCBSystem\\MainForm.cs [Design]",
+              "Title": "Modules.cs",
+              "DocumentMoniker": "C:\\Users\\loiz\\Desktop\\JCBSystem_sn\\JCBSystem\\common\\Modules.cs",
+              "RelativeDocumentMoniker": "JCBSystem\\common\\Modules.cs",
+              "ToolTip": "C:\\Users\\loiz\\Desktop\\JCBSystem_sn\\JCBSystem\\common\\Modules.cs",
+              "RelativeToolTip": "JCBSystem\\common\\Modules.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABUAAAA9AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-05T07:32:39.375Z",
-              "EditorCaption": " [Design]"
+              "WhenOpened": "2025-04-25T11:18:46.951Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "IDbConnectionFactory.cs",
+              "DocumentMoniker": "C:\\Users\\loiz\\Desktop\\JCBSystem_sn\\JCBSystem\\Connection\\IDbConnectionFactory.cs",
+              "RelativeDocumentMoniker": "JCBSystem\\Connection\\IDbConnectionFactory.cs",
+              "ToolTip": "C:\\Users\\loiz\\Desktop\\JCBSystem_sn\\JCBSystem\\Connection\\IDbConnectionFactory.cs",
+              "RelativeToolTip": "JCBSystem\\Connection\\IDbConnectionFactory.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-25T11:38:25.568Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "MainForm.cs",
+              "DocumentMoniker": "C:\\Users\\loiz\\Desktop\\JCBSystem_sn\\JCBSystem\\mainForm.cs",
+              "RelativeDocumentMoniker": "JCBSystem\\mainForm.cs",
+              "ToolTip": "C:\\Users\\loiz\\Desktop\\JCBSystem_sn\\JCBSystem\\mainForm.cs",
+              "RelativeToolTip": "JCBSystem\\mainForm.cs",
+              "ViewState": "AgIAANcAAAAAAAAAAAAowOUAAABKAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-25T09:44:07.665Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "UsersListForm.cs",
+              "DocumentMoniker": "C:\\Users\\loiz\\Desktop\\JCBSystem_sn\\JCBSystem\\Users\\usersListForm.cs",
+              "RelativeDocumentMoniker": "JCBSystem\\Users\\usersListForm.cs",
+              "ToolTip": "C:\\Users\\loiz\\Desktop\\JCBSystem_sn\\JCBSystem\\Users\\usersListForm.cs",
+              "RelativeToolTip": "JCBSystem\\Users\\usersListForm.cs",
+              "ViewState": "AgIAAGcAAAAAAAAAAAAkwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-25T11:35:54.206Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 6,
-              "Title": "UsersDto.cs",
-              "DocumentMoniker": "C:\\Users\\Avtech\\Desktop\\JCBSystem\\JCBSystem\\Users\\UsersDto.cs",
-              "RelativeDocumentMoniker": "JCBSystem\\Users\\UsersDto.cs",
-              "ToolTip": "C:\\Users\\Avtech\\Desktop\\JCBSystem\\JCBSystem\\Users\\UsersDto.cs",
-              "RelativeToolTip": "JCBSystem\\Users\\UsersDto.cs",
-              "ViewState": "AgIAAAYAAAAAAAAAAAAAABMAAAAeAAAAAAAAAA==",
+              "Title": "CheckIfRecordExists.cs",
+              "DocumentMoniker": "C:\\Users\\loiz\\Desktop\\JCBSystem_sn\\JCBSystem\\common\\CheckIfRecordExists.cs",
+              "RelativeDocumentMoniker": "JCBSystem\\common\\CheckIfRecordExists.cs",
+              "ToolTip": "C:\\Users\\loiz\\Desktop\\JCBSystem_sn\\JCBSystem\\common\\CheckIfRecordExists.cs",
+              "RelativeToolTip": "JCBSystem\\common\\CheckIfRecordExists.cs",
+              "ViewState": "AgIAABUAAAAAAAAAAAAAAC4AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-05T06:47:26.879Z"
+              "WhenOpened": "2025-04-25T11:13:48.428Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "LoadDataToTextBoxes.cs",
+              "DocumentMoniker": "C:\\Users\\loiz\\Desktop\\JCBSystem_sn\\JCBSystem\\common\\LoadDataToTextBoxes.cs",
+              "RelativeDocumentMoniker": "JCBSystem\\common\\LoadDataToTextBoxes.cs",
+              "ToolTip": "C:\\Users\\loiz\\Desktop\\JCBSystem_sn\\JCBSystem\\common\\LoadDataToTextBoxes.cs",
+              "RelativeToolTip": "JCBSystem\\common\\LoadDataToTextBoxes.cs",
+              "ViewState": "AgIAABMAAAAAAAAAAAAIwDMAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-25T11:29:13.313Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "UserManagementForm.cs",
+              "DocumentMoniker": "C:\\Users\\loiz\\Desktop\\JCBSystem_sn\\JCBSystem\\Users\\UserManagementForm.cs",
+              "RelativeDocumentMoniker": "JCBSystem\\Users\\UserManagementForm.cs",
+              "ToolTip": "C:\\Users\\loiz\\Desktop\\JCBSystem_sn\\JCBSystem\\Users\\UserManagementForm.cs",
+              "RelativeToolTip": "JCBSystem\\Users\\UserManagementForm.cs",
+              "ViewState": "AgIAAFwAAAAAAAAAAAAgwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-25T11:35:46.004Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "DataProtectorHelper.cs",
+              "DocumentMoniker": "C:\\Users\\loiz\\Desktop\\JCBSystem_sn\\JCBSystem\\common\\DataProtectorHelper.cs",
+              "RelativeDocumentMoniker": "JCBSystem\\common\\DataProtectorHelper.cs",
+              "ToolTip": "C:\\Users\\loiz\\Desktop\\JCBSystem_sn\\JCBSystem\\common\\DataProtectorHelper.cs",
+              "RelativeToolTip": "JCBSystem\\common\\DataProtectorHelper.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-25T11:26:35.803Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "loginForm.cs",
+              "DocumentMoniker": "C:\\Users\\loiz\\Desktop\\JCBSystem_sn\\JCBSystem\\Login\\loginForm.cs",
+              "RelativeDocumentMoniker": "JCBSystem\\Login\\loginForm.cs",
+              "ToolTip": "C:\\Users\\loiz\\Desktop\\JCBSystem_sn\\JCBSystem\\Login\\loginForm.cs",
+              "RelativeToolTip": "JCBSystem\\Login\\loginForm.cs",
+              "ViewState": "AgIAAE8AAAAAAAAAAAAkwFsAAAAhAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-25T11:03:48.609Z",
+              "EditorCaption": ""
             }
           ]
         }

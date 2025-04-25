@@ -1,5 +1,11 @@
-﻿using System;
+﻿using JCBSystem.Connection;
+using MySqlConnector;
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Data;
+using System.Data.Common;
+using System.Data.Odbc;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
@@ -9,44 +15,75 @@ namespace JCBSystem.common
 {
     public class CheckIfRecordExists
     {
-        private readonly string connectionString;
+        private readonly ConnectionAsync async = new ConnectionAsync();
+
+        private readonly IDbConnectionFactory _connectionFactory;
+
 
         public CheckIfRecordExists()
         {
-            this.connectionString = DatabaseConfig.ConnectionString;
+            this._connectionFactory = ConnectionFactorySelector.GetFactory();
         }
         public async Task<bool> CheckIfRecordExistsAsync(List<object> filter, string tableName, string whereCondition)
         {
             if (string.IsNullOrWhiteSpace(tableName) || string.IsNullOrWhiteSpace(whereCondition))
                 throw new ArgumentException("Table name and where condition must not be null or empty.");
 
-            // Use a constant format for the query to reduce the risk of dynamic SQL issues
-            const string queryFormat = "SELECT COUNT(1) FROM [{0}] WHERE {1}";
-
-            string query = string.Format(queryFormat, tableName, whereCondition);
             int index = 0;
 
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (var connection = _connectionFactory.CreateConnection())
             {
-                await connection.OpenAsync();
+                await async.OpenConnectionAsync(connection);
 
-                using (SqlCommand command = new SqlCommand(query, connection))
+                bool isOdbc = connection is OdbcConnection;
+
+
+                string finalQuery = Modules.ReplaceSharpWithParams(whereCondition, isOdbc);
+
+                // Use appropriate format depending on connection type
+                string queryFormat = isOdbc
+                    ? "SELECT COUNT(1) FROM `{0}` WHERE {1}" // MySQL-style backticks
+                    : "SELECT COUNT(1) FROM [{0}] WHERE {1}"; // SQL Server-style brackets
+
+                string query = string.Format(queryFormat, tableName, finalQuery);
+
+                using (var command = connection.CreateCommand())
                 {
-                    if (filter?.Count > 0)
+                    command.CommandText = query;
+
+                    if (filter.Count > 0)
                     {
                         foreach (var param in filter)
                         {
-                            string paramName = "@param" + index;
-                            command.Parameters.AddWithValue(paramName, param ?? DBNull.Value);
+                            string paramName = isOdbc ? "?" : "@param" + index;
+
+                            var parameter = command.CreateParameter();
+                            parameter.ParameterName = paramName;
+                            parameter.Value = param;
+                            command.Parameters.Add(parameter);
+
                             index++;
                         }
                     }
 
-                    int recordCount = (int)await command.ExecuteScalarAsync();
-                    return recordCount > 0;
+                    if (command is DbCommand dbCountCommand)
+                    {
+                        var result = await dbCountCommand.ExecuteScalarAsync();
+                        int recordCount = Convert.ToInt32(result);
+                        return recordCount > 0;
+                    }
+                    else
+                    {
+                        var result = command.ExecuteScalar();
+                        int recordCount = Convert.ToInt32(result);
+                        return recordCount > 0;
+                    }
                 }
             }
         }
+
+
+
 
     }
 }

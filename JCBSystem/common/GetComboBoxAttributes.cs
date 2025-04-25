@@ -1,5 +1,8 @@
-﻿using System;
+﻿using JCBSystem.Connection;
+using System;
 using System.Collections.Generic;
+using System.Data.Common;
+using System.Data.Odbc;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
@@ -10,31 +13,41 @@ namespace JCBSystem.common
 {
     public class GetComboBoxAttributes
     {
-        private readonly string connectionString;
+        private readonly IDbConnectionFactory _connectionFactory;
+
+        private readonly ConnectionAsync async = new ConnectionAsync();
 
         public GetComboBoxAttributes()
         {
-            this.connectionString = DatabaseConfig.ConnectionString;
+            this._connectionFactory = ConnectionFactorySelector.GetFactory();
         }
 
         public async Task GetComboBoxAttributeValueAsync(ComboBox comboBox, string query)
         {
             comboBox.Items.Clear(); // Clear existing items
 
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (var connection = _connectionFactory.CreateConnection())
             {
-                await connection.OpenAsync(); // Buksan ang koneksyon
+                await async.OpenConnectionAsync(connection);
 
-                using (SqlCommand command = new SqlCommand(query, connection))
+                var isOdbc = connection is OdbcConnection;
+
+                string finalQuery = Modules.ReplaceSharpWithParams(query, isOdbc);
+
+                using (var command = connection.CreateCommand())
                 {
-                    // I-execute ang query at kunin ang data
-                    using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                    command.CommandText = finalQuery;
+                    // I-execute ang query at kunin ang dataS
+                    if (command is DbCommand dbCommand)
                     {
-                        // Basahin ang mga resulta at idagdag sa comboBox
-                        while (await reader.ReadAsync())
+                        using (var reader = await dbCommand.ExecuteReaderAsync())
                         {
-                            // Halimbawa, i-add ang value mula sa unang column
-                            comboBox.Items.Add(reader[0].ToString());
+                            // Basahin ang mga resulta at idagdag sa comboBox
+                            while (await reader.ReadAsync())
+                            {
+                                // Halimbawa, i-add ang value mula sa unang column
+                                comboBox.Items.Add(reader[0].ToString());
+                            }
                         }
                     }
                 }

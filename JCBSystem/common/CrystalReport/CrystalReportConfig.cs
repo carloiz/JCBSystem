@@ -9,22 +9,32 @@ using System.Text;
 using System.Threading.Tasks;
 using CrystalDecisions.Windows.Forms;
 using JCBSystem;
+using JCBSystem.Connection;
+using System.Configuration;
+using System.Data.Odbc;
+using MySqlConnector;
+using System.Data.Common;
 
 namespace JCBSystem.common.CrystalReport
 {
     public class CrystalReportConfig
     {
-        private readonly string connectionString;
+        private readonly IDbConnectionFactory _connectionFactory;
         private readonly DatabaseHelper databaseHelper;
+
+        private readonly ConnectionAsync async = new ConnectionAsync();
+
+        private readonly string connectionString = ConfigurationManager.ConnectionStrings["MyDbConnection"].ConnectionString;
+
 
         public CrystalReportConfig(DatabaseHelper databaseHelper)
         {
-            this.connectionString = DatabaseConfig.ConnectionString;
             this.databaseHelper = databaseHelper;
+            this._connectionFactory = ConnectionFactorySelector.GetFactory();
         }
 
         public async Task GenerateReportWithMultipleSubreports(
-            ReportDocument repo,
+            ReportDocument repo, 
             List<(string query, string subreportName, List<SqlParameter> parameters, bool isMainReport)> queryParamsList,
             CrystalReportViewer ReportViewer,
             Dictionary<string, object> _keyValues
@@ -43,9 +53,10 @@ namespace JCBSystem.common.CrystalReport
             }
 
             // Open connection using ADO.NET
-            using (SqlConnection cn = new SqlConnection(connectionString))
+            using (var connection = _connectionFactory.CreateConnection())
             {
-                await cn.OpenAsync();
+
+                await async.OpenConnectionAsync(connection);
 
                 // Initialize a flag to track whether we've set the main report's data source
                 bool mainReportSet = false;
@@ -59,19 +70,27 @@ namespace JCBSystem.common.CrystalReport
                     var isMainReport = queryParam.isMainReport;
                     var dataTable = new DataTable();
 
-                    using (SqlCommand cmd = new SqlCommand(query, cn))
+                    using (var command = connection.CreateCommand())
                     {
+                        command.CommandText = query;
                         // Add parameters dynamically to the SqlCommand
                         foreach (var param in parameters)
                         {
-                            cmd.Parameters.Add(param);
+                            command.Parameters.Add(param);
                         }
 
                         // Execute the query and load data into DataTable
-                        using (SqlDataAdapter adapter = new SqlDataAdapter(cmd))
+                        var adapter = ConnectionFactorySelector.CreateDataAdapter(command);
+
+                        if (adapter is DbDataAdapter dbAdapter)
                         {
-                            adapter.Fill(dataTable);
+                            dbAdapter.Fill(dataTable); // ✔️ This works
                         }
+                        else
+                        {
+                            throw new NotSupportedException($"Adapter type not supported: {adapter.GetType().Name}");
+                        }
+
                     }
 
                     if (isMainReport)
@@ -135,6 +154,10 @@ namespace JCBSystem.common.CrystalReport
             // After setting data sources for all subreports, you can finalize the report generation
             // Example: You can now export or display the report as needed.
         }
+
+
+
+
 
         public SqlParameter CreateSqlParameter(string parameterName, object value)
         {

@@ -19,15 +19,17 @@ namespace JCBSystem.Users
         private readonly GenerateNextValues values = new GenerateNextValues();
         private readonly UsersListForm listForm;
         private readonly bool isNewRecord;
+        private readonly string userNumber;
         private readonly SystemDate date = new SystemDate();
 
 
 
-        public UserManagementForm(UsersListForm listForm, bool isNewRecord)
+        public UserManagementForm(UsersListForm listForm, bool isNewRecord, string userNumber = null)
         {
             InitializeComponent();
             this.listForm = listForm;
             this.isNewRecord = isNewRecord;
+            this.userNumber = userNumber;
         }
 
         private async void button1_Click(object sender, EventArgs e)
@@ -76,12 +78,12 @@ namespace JCBSystem.Users
 
             await dataManager.CommitAndRollbackMethod(async (connection, transaction) =>
             {
-                await Process(connection, transaction); // Tawagin ang Process method na may transaction at connection
+                await ProcessCreate(connection, transaction); // Tawagin ang Process method na may transaction at connection
             });
         }
 
 
-        private async Task Process(SqlConnection connection, SqlTransaction transaction)
+        private async Task ProcessCreate(IDbConnection connection, IDbTransaction transaction)
         {
             string password = PasswordHelper.HashPassword(txtPassword.Text);
 
@@ -131,6 +133,11 @@ namespace JCBSystem.Users
                 this.button1.Enabled = false;
                 this.button2.Enabled = true;
             }
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
