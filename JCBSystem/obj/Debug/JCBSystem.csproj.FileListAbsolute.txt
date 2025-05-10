@@ -142,3 +142,15 @@ C:\Users\loiz\Desktop\JCBSystem_sn\JCBSystem\bin\Debug\Microsoft.Extensions.Depe
 C:\Users\loiz\Desktop\JCBSystem_sn\JCBSystem\bin\Debug\MySqlConnector.dll
 C:\Users\loiz\Desktop\JCBSystem_sn\JCBSystem\bin\Debug\Microsoft.Extensions.DependencyInjection.Abstractions.xml
 C:\Users\loiz\Desktop\JCBSystem_sn\JCBSystem\bin\Debug\MySqlConnector.xml
+C:\Users\loiz\Desktop\JCBSystem_sn\JCBSystem\bin\Debug\Microsoft.Bcl.HashCode.dll
+C:\Users\loiz\Desktop\JCBSystem_sn\JCBSystem\bin\Debug\Npgsql.dll
+C:\Users\loiz\Desktop\JCBSystem_sn\JCBSystem\bin\Debug\System.Collections.Immutable.dll
+C:\Users\loiz\Desktop\JCBSystem_sn\JCBSystem\bin\Debug\System.Threading.Channels.dll
+C:\Users\loiz\Desktop\JCBSystem_sn\JCBSystem\bin\Debug\Microsoft.Bcl.HashCode.xml
+C:\Users\loiz\Desktop\JCBSystem_sn\JCBSystem\bin\Debug\Npgsql.xml
+C:\Users\loiz\Desktop\JCBSystem_sn\JCBSystem\bin\Debug\System.Collections.Immutable.xml
+C:\Users\loiz\Desktop\JCBSystem_sn\JCBSystem\bin\Debug\System.Threading.Channels.xml
+C:\Users\loiz\Desktop\JCBSystem_sn\JCBSystem\bin\Debug\JCBSystem.exe.manifest
+C:\Users\loiz\Desktop\JCBSystem_sn\JCBSystem\bin\Debug\JCBSystem.application
+C:\Users\loiz\Desktop\JCBSystem_sn\JCBSystem\obj\Debug\JCBSystem.exe.manifest
+C:\Users\loiz\Desktop\JCBSystem_sn\JCBSystem\obj\Debug\JCBSystem.application

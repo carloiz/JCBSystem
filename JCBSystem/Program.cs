@@ -13,8 +13,6 @@ namespace JCBSystem
 {
     internal static class Program
     {
-        //private static readonly string connectionString = Environment.GetEnvironmentVariable("MyDbConnection");
-
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
@@ -83,11 +81,5 @@ namespace JCBSystem
                 Console.WriteLine("Connection string is already decrypted.");
             }
         }
-
-
-
-
-
-
     }
 }

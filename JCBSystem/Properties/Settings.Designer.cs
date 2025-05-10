@@ -34,17 +34,5 @@ namespace JCBSystem.Properties {
                 this["JwtKey"] = value;
             }
         }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("odbc")]
-        public string ConnectionName {
-            get {
-                return ((string)(this["ConnectionName"]));
-            }
-            set {
-                this["ConnectionName"] = value;
-            }
-        }
     }
 }

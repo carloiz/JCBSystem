@@ -172,8 +172,9 @@ namespace JCBSystem
 
 
 
-        public void userIsLogin()
+        public void userIsLogin(string userNumber)
         {
+            usernameLbl.Text = userNumber;
             panel1.Visible = true;
             UsersBtn.Visible = true;
             SettingsBtn.Visible = true;
@@ -217,8 +218,6 @@ namespace JCBSystem
             {
                 userIsLogout();
                 return;
-
-                // throw new KeyNotFoundException("Token username or user level not found");
             }
 
             token = await DataProtectorHelper.Unprotect(token);
@@ -230,7 +229,7 @@ namespace JCBSystem
                 bool isExist = await recordExists.CheckIfRecordExistsAsync(
                     new List<object> { usernumber },
                     "Users",
-                    "UserNumber = # AND IsSessionActive = 1"
+                    "UserNumber = # AND IsSessionActive = true"
                 );
 
                 if (!isExist)
@@ -264,9 +263,7 @@ namespace JCBSystem
                 return;
             }
 
-            userIsLogin();
-
-            usernameLbl.Text = usernumber;
+            userIsLogin(usernumber);
 
         }
 

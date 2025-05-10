@@ -30,4 +30,14 @@ namespace JCBSystem.Users
         public string CurrentToken { get; set; }
         public DateTime RecordDate { get; set; }
     }
+
+
+    public class UserUpdateDto
+    {
+        public string UserNumber { get; set; }
+        public string Username { get; set; }
+        public string Password { get; set; }
+        public string UserLevel { get; set; }
+
+    }
 }

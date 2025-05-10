@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using JCBSystem.common;
@@ -9,14 +10,14 @@ namespace JCBSystem.Users
 {
     public partial class UsersListForm : Form
     {
-
+     
         private readonly DataManager dataManager = new DataManager();
-
-        private readonly Modules modules = new Modules();
 
         private readonly Pagination pagination = new Pagination();
 
         private string userNumber;
+
+        private Dictionary<string, object> rowValue;
 
         public UsersListForm()
         {
@@ -28,18 +29,10 @@ namespace JCBSystem.Users
         public async void get_all_data(List<string> image = null)
         {
 
-            string countQuery = $@"
-                SELECT COUNT(*)
-                FROM 
-                    Users
-                ";
+            string countQuery = $@"SELECT COUNT(*) FROM Users";
 
             // Query to fetch paginated data
-            string dataQuery = $@"
-                SELECT *
-                FROM 
-                    Users
-                ";
+            string dataQuery = $@"SELECT * FROM Users";
 
 
             var customHeaders = new Dictionary<string, string>
@@ -56,14 +49,13 @@ namespace JCBSystem.Users
 
             var (result, totalRecords) = await
                 dataManager.SearchWithPaginatedAsync<UsersDto>
-                (new List<object> { }, countQuery, dataQuery, dataGridView1, image, customHeaders, modules.pageNumber, modules.pageSize);
+                (new List<object> { }, countQuery, dataQuery, dataGridView1, image, customHeaders, pagination.pageNumber, pagination.pageSize);
 
-            modules.totalPages = (int)Math.Ceiling((double)totalRecords / modules.pageSize);
+            pagination.totalPages = (int)Math.Ceiling((double)totalRecords / pagination.pageSize);
 
 
 
-            pagination.UpdatePagination(panel1, modules.totalPages, modules.pageNumber, UpdateRecords, true);
-
+            pagination.UpdatePagination(panel1, pagination.totalPages, pagination.pageNumber, UpdateRecords, true);
 
 
             dataGridView1.ColumnHeadersVisible = (string.IsNullOrEmpty(result)) ? true : false;
@@ -89,7 +81,7 @@ namespace JCBSystem.Users
 
         private Task UpdateRecords(int pageNumber)
         {
-            modules.pageNumber = pageNumber;
+            pagination.pageNumber = pageNumber;
             get_all_data();
             return Task.CompletedTask;
         }
@@ -113,18 +105,29 @@ namespace JCBSystem.Users
 
                     // Kunin ang value ng "ID" column
                     object idValue = dataGridView1.Rows[hit.RowIndex].Cells["UserNumber"].Value;
+                    object userNameValue = dataGridView1.Rows[hit.RowIndex].Cells["Username"].Value;
+                    object roleValue = dataGridView1.Rows[hit.RowIndex].Cells["UserLevel"].Value;
 
                     userNumber = idValue.ToString();
+
+                    rowValue = new Dictionary<string, object>
+                    {
+                        { "Usernumber", idValue },
+                        { "Username", userNameValue },
+                        { "Role", roleValue },
+                    };
 
                 }
             }
 
             if (string.IsNullOrEmpty(userNumber))
             {
+                deleteToolStripMenuItem.Visible = false;
                 updateToolStripMenuItem.Visible = false;
                 return;
             }
 
+            deleteToolStripMenuItem.Visible = true;
             updateToolStripMenuItem.Visible = true;
         }
 
@@ -137,8 +140,34 @@ namespace JCBSystem.Users
 
         private void updateToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            UserManagementForm user = new UserManagementForm(this, false, userNumber);
+            UserManagementForm user = new UserManagementForm(this, false, rowValue);
             FormHelper.OpenFormWithFade(user, true);
+        }
+
+        private async void deleteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            await dataManager.CommitAndRollbackMethod(async (connection, transaction) =>
+            {
+                await ProcessDelete(connection, transaction); // Tawagin ang Process method na may transaction at connection
+            });
+        }
+
+
+        private async Task ProcessDelete(IDbConnection connection, IDbTransaction transaction)
+        {
+
+            string whereCondition = "Usernumber = #";
+
+            await dataManager.DeleteAsync(new List<object> { userNumber }, "Users", connection, transaction, whereCondition);
+
+
+            transaction.Commit(); // Commit changes  
+
+            get_all_data();
+
+            // Display the message for successful shift start
+            MessageBox.Show($"Successfully Delete {userNumber} Record.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using JCBSystem.Properties;
-using MySqlConnector;
+﻿using MySqlConnector;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -9,12 +8,13 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Npgsql;
 
 namespace JCBSystem.Connection
 {
     public static class ConnectionFactorySelector
     {
-        private static readonly string _connName = Settings.Default.ConnectionName.ToLower();
+        private static readonly string _connName = "odbc";
 
         private static readonly string connectionString = ConfigurationManager.ConnectionStrings["MyOdbcConnection"].ConnectionString;
 
@@ -27,7 +27,9 @@ namespace JCBSystem.Connection
                 case "mysql":
                     return new MySqlConnectionFactory(connectionString);
                 case "odbc":
-                    return new OdbcConnectionFactory(connectionString);
+                    return new OdbcConnectionFactory(connectionString);                
+                case "npgsql":
+                    return new NpgsqlConnectionFactory(connectionString);
                 default:
                     throw new NotSupportedException($"Provider '{_connName}' is not supported.");
             }
@@ -42,7 +44,10 @@ namespace JCBSystem.Connection
                 return new OdbcDataAdapter(odbcCmd);
 
             if (command is MySqlCommand mysqlCmd)
-                return new MySqlDataAdapter(mysqlCmd);
+                return new MySqlDataAdapter(mysqlCmd);           
+            
+            if (command is NpgsqlCommand npgSqlCmd)
+                return new NpgsqlDataAdapter(npgSqlCmd);
             // Add more if needed (e.g., MySqlCommand)
 
             throw new NotSupportedException($"Unsupported command type: {command.GetType().Name}");

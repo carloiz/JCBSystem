@@ -110,7 +110,7 @@ namespace JCBSystem
 
             if (userPassword == null || !PasswordHelper.VerifyPassword(txtPassword.Text, userPassword))
             {
-                throw new ArgumentNullException("Login Failed, Incorrect Username or Password");
+                throw new Exception("Login Failed, Incorrect Username or Password");
             }
 
 
@@ -163,7 +163,7 @@ namespace JCBSystem
 
             transaction.Commit(); // Commit changes
 
-            mainForm.userIsLogin();
+            mainForm.userIsLogin(userNumber);
 
             FormHelper.CloseFormWithFade(this);
         }

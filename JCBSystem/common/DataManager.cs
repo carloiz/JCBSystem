@@ -1,5 +1,6 @@
 ﻿using JCBSystem.Connection;
 using MySqlConnector;
+using Npgsql;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -19,6 +20,7 @@ namespace JCBSystem.common
     {
 
         private readonly IDbConnectionFactory _connectionFactory;
+        private readonly ConnectionAsync async = new ConnectionAsync();
 
 
         private readonly Color headerForeColor = Color.White;
@@ -53,7 +55,7 @@ namespace JCBSystem.common
 
             using (var connection = _connectionFactory.CreateConnection())
             {
-                await OpenConnectionAsync(connection);
+                await async.OpenConnectionAsync(connection);
 
                 bool isOdbc = connection is OdbcConnection;
 
@@ -68,7 +70,7 @@ namespace JCBSystem.common
                         countCommand.CommandText = finalCountQuery;
 
                         if (filter.Count > 0)
-                        {
+                        { 
                             foreach (var param in filter)
                             {
                                 string paramName = "@param" + index;
@@ -288,7 +290,7 @@ namespace JCBSystem.common
 
             using (var connection = _connectionFactory.CreateConnection())
             {
-                await OpenConnectionAsync(connection);
+                await async.OpenConnectionAsync(connection);
 
 
                 bool isOdbc = connection is OdbcConnection;
@@ -473,13 +475,17 @@ namespace JCBSystem.common
 
         // INSERT
         public async Task<object> InsertAsync<T>(
-          T entity,
-          string tableName,
-          IDbConnection connection,
-          IDbTransaction transaction)
+           T entity,
+           string tableName,
+           IDbConnection connection,
+           IDbTransaction transaction,
+           string primaryKeyColumn = "id") // ➔ Added optional parameter
         {
             if (string.IsNullOrWhiteSpace(tableName) || !Regex.IsMatch(tableName, @"^[a-zA-Z0-9_]+$"))
                 throw new ArgumentException("Invalid table name.", nameof(tableName));
+
+            if (string.IsNullOrWhiteSpace(primaryKeyColumn))
+                throw new ArgumentException("Primary key column name must be provided.", nameof(primaryKeyColumn));
 
             try
             {
@@ -491,18 +497,25 @@ namespace JCBSystem.common
                     throw new ArgumentException("Entity has no readable properties with values.");
 
                 bool isOdbc = connection is OdbcConnection;
+                bool isNpgSql = connection is NpgsqlConnection;
+
                 if (isOdbc)
-                    tableName.ToLower();
+                    tableName = tableName.ToLower();
 
                 string columnList = string.Join(", ", properties.Select(p =>
-                    isOdbc ? $"`{p.Name}`" : $"[{p.Name}]"
+                    (isOdbc || isNpgSql) ? p.Name : $"[{p.Name}]"
                 ));
 
                 string valueList = string.Join(", ", properties.Select(p =>
                     isOdbc ? "?" : "@" + p.Name
                 ));
 
-                string insertQuery = $"INSERT INTO {(isOdbc ? $"`{tableName}`" : $"[{tableName}]")} ({columnList}) VALUES ({valueList});";
+                string insertQuery = $"INSERT INTO {(isOdbc || isNpgSql ? tableName : $"[{tableName}]")} ({columnList}) VALUES ({valueList})";
+
+                if (isNpgSql)
+                {
+                    insertQuery += $" RETURNING {primaryKeyColumn}"; // ➔ dynamic na ang primary key
+                }
 
                 using (var insertCommand = connection.CreateCommand())
                 {
@@ -517,22 +530,34 @@ namespace JCBSystem.common
                         insertCommand.Parameters.Add(param);
                     }
 
-                    // 🔁 First, execute the INSERT
-                    if (insertCommand is DbCommand insertDbCommand)
-                        await insertDbCommand.ExecuteNonQueryAsync();
-                    else
-                        insertCommand.ExecuteNonQuery();
-
-                    // 🔁 Then, get the last inserted ID
-                    using (var identityCommand = connection.CreateCommand())
+                    if (isNpgSql)
                     {
-                        identityCommand.Transaction = transaction;
-                        identityCommand.CommandText = isOdbc ? "SELECT LAST_INSERT_ID();" : "SELECT SCOPE_IDENTITY();";
-
-                        if (identityCommand is DbCommand identityDbCommand)
-                            return await identityDbCommand.ExecuteScalarAsync();
+                        if (insertCommand is DbCommand insertDbCommand)
+                            return await insertDbCommand.ExecuteScalarAsync();
                         else
-                            return identityCommand.ExecuteScalar();
+                            return insertCommand.ExecuteScalar();
+                    }
+                    else
+                    {
+                        if (insertCommand is DbCommand insertDbCommand)
+                            await insertDbCommand.ExecuteNonQueryAsync();
+                        else
+                            insertCommand.ExecuteNonQuery();
+
+                        using (var identityCommand = connection.CreateCommand())
+                        {
+                            identityCommand.Transaction = transaction;
+
+                            if (isOdbc)
+                                identityCommand.CommandText = "SELECT LAST_INSERT_ID();";
+                            else
+                                identityCommand.CommandText = "SELECT SCOPE_IDENTITY();";
+
+                            if (identityCommand is DbCommand identityDbCommand)
+                                return await identityDbCommand.ExecuteScalarAsync();
+                            else
+                                return identityCommand.ExecuteScalar();
+                        }
                     }
                 }
             }
@@ -541,6 +566,8 @@ namespace JCBSystem.common
                 throw new Exception("An error occurred while inserting data: " + ex.Message, ex);
             }
         }
+
+
 
 
 
@@ -564,6 +591,8 @@ namespace JCBSystem.common
             {
                 var isOdbc = connection is OdbcConnection;
 
+                bool isNpgSql = connection is NpgsqlConnection;
+
                 if (isOdbc)
                     tableName.ToLower();
 
@@ -575,14 +604,15 @@ namespace JCBSystem.common
 
                 // SET clause
                 var setClause = string.Join(", ", setProperties.Select(p =>
-                    isOdbc ? $"`{p.Name}` = ?" : $"[{p.Name}] = @{p.Name}"
+                    isNpgSql ? $"{p.Name} = @{p.Name}" : isOdbc ? $"`{p.Name}` = ?" : $"[{p.Name}] = @{p.Name}"
                 ));
 
                 string query;
 
                 if (!string.IsNullOrEmpty(primaryKey))
                 {
-                    query = isOdbc
+                    query = isNpgSql ? $"UPDATE {tableName} SET {setClause} WHERE {primaryKey} = @{primaryKey}" :
+                        isOdbc
                         ? $"UPDATE `{tableName}` SET {setClause} WHERE `{primaryKey}` = ?"
                         : $"UPDATE [{tableName}] SET {setClause} WHERE [{primaryKey}] = @{primaryKey}";
                 }
@@ -590,13 +620,15 @@ namespace JCBSystem.common
                 {
                     string finalQuery = Modules.ReplaceSharpWithParams(whereCondition, isOdbc);
 
-                    query = isOdbc
+                    query = isNpgSql ? $"UPDATE {tableName} SET {setClause} WHERE {finalQuery}" :
+                        isOdbc
                         ? $"UPDATE `{tableName}` SET {setClause} WHERE {finalQuery}"
                         : $"UPDATE [{tableName}] SET {setClause} WHERE {finalQuery}";
                 }
                 else
                 {
-                    query = isOdbc
+                    query = isNpgSql ? $"UPDATE {tableName} SET {setClause}" :
+                        isOdbc
                         ? $"UPDATE `{tableName}` SET {setClause}"
                         : $"UPDATE [{tableName}] SET {setClause}";
                 }
@@ -726,7 +758,7 @@ namespace JCBSystem.common
         {
             using (var connection = _connectionFactory.CreateConnection())
             {
-                await OpenConnectionAsync(connection);
+                await async.OpenConnectionAsync(connection);
 
                 using (var transaction = connection.BeginTransaction())
                 {
@@ -748,15 +780,5 @@ namespace JCBSystem.common
             }
         }
 
-        private async Task OpenConnectionAsync(IDbConnection connection)
-        {
-            // IDbConnection does not have OpenAsync, so cast only if supported
-            if (connection is SqlConnection sqlConn)
-                await sqlConn.OpenAsync();
-            else if (connection is MySqlConnection mySqlConn)
-                await mySqlConn.OpenAsync();
-            else
-                connection.Open(); // fallback for ODBC or others
-        }
     }
 }

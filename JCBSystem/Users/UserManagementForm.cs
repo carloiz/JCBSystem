@@ -19,17 +19,17 @@ namespace JCBSystem.Users
         private readonly GenerateNextValues values = new GenerateNextValues();
         private readonly UsersListForm listForm;
         private readonly bool isNewRecord;
-        private readonly string userNumber;
+        private readonly Dictionary<string, object> keyValues;
         private readonly SystemDate date = new SystemDate();
 
 
 
-        public UserManagementForm(UsersListForm listForm, bool isNewRecord, string userNumber = null)
+        public UserManagementForm(UsersListForm listForm, bool isNewRecord, Dictionary<string, object> keyValues = null)
         {
             InitializeComponent();
             this.listForm = listForm;
             this.isNewRecord = isNewRecord;
-            this.userNumber = userNumber;
+            this.keyValues = keyValues;
         }
 
         private async void button1_Click(object sender, EventArgs e)
@@ -62,7 +62,7 @@ namespace JCBSystem.Users
             bool isExist = await recordExists.CheckIfRecordExistsAsync(
                 new List<object> { txtUsername.Text },
                 "Users",
-                "Username = @param0"
+                "Username = #"
             );
 
             if (isExist)
@@ -103,7 +103,7 @@ namespace JCBSystem.Users
                 RecordDate = dateToday
             };
 
-            await dataManager.InsertAsync(userCreateDto, "Users", connection, transaction);
+            await dataManager.InsertAsync(userCreateDto, "Users", connection, transaction, "UserNumber");
 
 
             transaction.Commit(); // Commit changes  
@@ -130,14 +130,96 @@ namespace JCBSystem.Users
             }
             else
             {
+                txtUsername.Text = keyValues["Username"].ToString();
+                cbRole.Text = keyValues["Role"].ToString();
                 this.button1.Enabled = false;
                 this.button2.Enabled = true;
             }
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private async void button2_Click(object sender, EventArgs e)
         {
+            if (string.IsNullOrEmpty(txtUsername.Text)
+              || string.IsNullOrEmpty(txtPassword.Text)
+              || string.IsNullOrEmpty(txtRepassword.Text)
+              || string.IsNullOrEmpty(cbRole.Text))
+            {
+                MessageBox.Show(
+                    "Fill-Up All Fields.",
+                    "",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning
+                );
+                return;
+            }
 
+            if (txtPassword.Text != txtRepassword.Text)
+            {
+                MessageBox.Show(
+                    "Password and Retype Password Must Same.",
+                    "",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning
+                );
+                return;
+            }
+
+            bool isExist = await recordExists.CheckIfRecordExistsAsync(
+                new List<object> { keyValues["Username"].ToString(), txtUsername.Text },
+                "Users",
+                "Username NOT LIKE # AND Username = #"
+            );
+
+            if (isExist)
+            {
+                MessageBox.Show(
+                    "Username Already Exist.",
+                    "",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning
+                );
+                return;
+            }
+
+            await dataManager.CommitAndRollbackMethod(async (connection, transaction) =>
+            {
+                await ProcessUpdate(connection, transaction); // Tawagin ang Process method na may transaction at connection
+            });
+        }
+
+
+        private async Task ProcessUpdate(IDbConnection connection, IDbTransaction transaction)
+        {
+            string password = PasswordHelper.HashPassword(txtPassword.Text);
+
+            var userId = keyValues["Usernumber"].ToString();
+
+            var userUpdateDto = new UserUpdateDto
+            {
+                UserNumber = userId,
+                Username = txtUsername.Text,
+                Password = password,
+                UserLevel = cbRole.SelectedItem.ToString(),
+
+            };
+
+            await dataManager.UpdateAsync(
+                entity: userUpdateDto,
+                tableName: "Users",
+                connection: connection,
+                transaction: transaction,
+                primaryKey: "UserNumber"
+            );
+
+
+            transaction.Commit(); // Commit changes  
+
+            listForm.get_all_data();
+
+            // Display the message for successful shift start
+            MessageBox.Show($"Successfully Update {userId} Record.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+            FormHelper.CloseFormWithFade(this);
         }
     }
 }
